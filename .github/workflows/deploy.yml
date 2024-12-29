@@ -7,7 +7,7 @@ on:
 
 jobs:
   build-and-deploy:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux]
 
     steps:
       - name: Checkout code
@@ -26,9 +26,12 @@ jobs:
           flutter --version
           flutter doctor
           flutter build web --release
-          pwd && ls -l build/web
+          ls -l build/web
 
       - name: Deploy to VPS
         run: |
-          sudo cp -r /home/runner/work/kacchi_bari_admin_dashboard/kacchi_bari_admin_dashboard/build/web/* /var/www/admin.kacchibari.com/html
-
+          APP_DIR=/var/www/admin.kacchibari.com/html
+          BUILD_DIR=build/web
+          
+          sudo rm -rf $APP_DIR/*
+          sudo cp -r $BUILD_DIR/* $APP_DIR/
