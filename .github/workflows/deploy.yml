@@ -26,4 +26,7 @@ jobs:
       - name: Deploy to VPS
         run: |
           rsync -avz --delete build/web/ zihad@64.227.133.121:/var/www/admin.kacchibari.com/
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          SSH_PUBLIC_KEY: ${{ secrets.SSH_PUBLIC_KEY }}
 
