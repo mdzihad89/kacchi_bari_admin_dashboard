@@ -30,5 +30,11 @@ jobs:
           VPS_USER: ${{ secrets.VPS_USER }}
           VPS_HOST: ${{ secrets.VPS_HOST }}
         run: |
-          # Use rsync to copy the build/web directory to the VPS
+          # Check if rsync is installed
+          if ! command -v rsync &> /dev/null; then
+            echo "rsync could not be found, installing..."
+            sudo apt-get update && sudo apt-get install -y rsync
+          fi
+
+          # Deploy to the VPS using rsync
           rsync -avz --delete build/web/ $VPS_USER@$VPS_HOST:/var/www/admin.kacchibari.com
