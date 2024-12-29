@@ -31,9 +31,10 @@ jobs:
 
       - name: Add VPS Host to known_hosts
         run: |
-          ssh-keyscan -H $VPS_HOST >> ~/.ssh/known_hosts
+          # Ensure the host is properly added to the known_hosts file
+          ssh-keyscan -H ${{ secrets.VPS_HOST }} >> ~/.ssh/known_hosts
 
       - name: Deploy to VPS
         run: |
           # Use rsync to copy the build/web directory to the VPS
-          rsync -avz --delete build/web/ $VPS_USER@$VPS_HOST:/var/www/admin.kacchibari.com
+          rsync -avz --delete build/web/ ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}:/var/www/admin.kacchibari.com
