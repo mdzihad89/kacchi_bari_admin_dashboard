@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
@@ -20,20 +21,26 @@ jobs:
       - name: Install dependencies
         run: flutter pub get
 
-      -  name: Build Flutter web app
-         run: flutter build web --release
+      - name: Debug Build Process
+        run: |
+          flutter --version
+          flutter doctor
+          flutter build web --release
+          ls -l build/web
+
       - name: Deploy to VPS
         run: |
           APP_DIR=/var/www/admin.kacchibari.com/html
           BUILD_DIR=build/web
-          
+
           # Ensure the target directory exists
           sudo mkdir -p $APP_DIR
-          
+
           # Remove old files and copy new ones
           sudo rm -rf $APP_DIR/*
           sudo cp -r $BUILD_DIR/* $APP_DIR/
-          
+
           # Set appropriate permissions
           sudo chown -R www-data:www-data $APP_DIR
           sudo chmod -R 755 $APP_DIR
+
