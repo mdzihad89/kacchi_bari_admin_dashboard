@@ -5,7 +5,7 @@ on:
     branches:
       - main
 jobs:
-  deploy:
+  build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
@@ -22,11 +22,14 @@ jobs:
 
       -  name: Build Flutter web app
          run: flutter build web --release
-
       - name: Deploy to VPS
         run: |
-          rsync -avz --delete build/web/ zihad@64.227.133.121:/var/www/admin.kacchibari.com/
-        env:
-          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-          SSH_PUBLIC_KEY: ${{ secrets.SSH_PUBLIC_KEY }}
+          APP_DIR=/var/www/admin.kacchibari.com/html
+          BUILD_DIR=build/web
 
+          sudo rm -rf $APP_DIR/*
+          sudo cp -r $BUILD_DIR/* $APP_DIR/
+
+          # Set appropriate permissions
+          sudo chown -R www-data:www-data $APP_DIR
+          sudo chmod -R 755 $APP_DIR
