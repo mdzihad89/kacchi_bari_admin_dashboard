@@ -26,7 +26,7 @@ jobs:
           flutter --version
           flutter doctor
           flutter build web --release
-          ls -l build/web
+          pwd && ls -l build/web
 
       - name: Deploy to VPS
         run: |
