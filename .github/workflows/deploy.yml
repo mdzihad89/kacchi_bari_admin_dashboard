@@ -26,10 +26,14 @@ jobs:
         run: |
           APP_DIR=/var/www/admin.kacchibari.com/html
           BUILD_DIR=build/web
-
+          
+          # Ensure the target directory exists
+          sudo mkdir -p $APP_DIR
+          
+          # Remove old files and copy new ones
           sudo rm -rf $APP_DIR/*
           sudo cp -r $BUILD_DIR/* $APP_DIR/
-
+          
           # Set appropriate permissions
           sudo chown -R www-data:www-data $APP_DIR
           sudo chmod -R 755 $APP_DIR
