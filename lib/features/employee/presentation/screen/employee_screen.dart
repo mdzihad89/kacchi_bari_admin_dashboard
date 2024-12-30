@@ -51,10 +51,10 @@ class _EmployeeScreenState extends State<EmployeeScreen> {
                   builder: (context) {
                     String? role;
                     GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-                    TextEditingController _nameController = TextEditingController(text: "Md Toru");
-                    TextEditingController _emailController = TextEditingController(text: "toru3@gmail.com");
-                    TextEditingController _phoneNumberController = TextEditingController(text:  "01621742306");
-                    TextEditingController _passwordController = TextEditingController(text: "123456");
+                    TextEditingController _nameController = TextEditingController();
+                    TextEditingController _emailController = TextEditingController();
+                    TextEditingController _phoneNumberController = TextEditingController();
+                    TextEditingController _passwordController = TextEditingController();
                     Uint8List? imagePath;
                     return StatefulBuilder(
                       builder: (context, setState) {

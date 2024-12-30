@@ -46,7 +46,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
               onPressed:(){
                 showDialog(context: context, builder: (context) {
                   final _formKey = GlobalKey<FormState>();
-                  TextEditingController _categoryNameController = TextEditingController(text: "Kacchi");
+                  TextEditingController _categoryNameController = TextEditingController();
                   Uint8List? imageBytes;
 
                   return StatefulBuilder(

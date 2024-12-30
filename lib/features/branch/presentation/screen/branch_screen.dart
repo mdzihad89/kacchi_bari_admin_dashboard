@@ -55,9 +55,9 @@ class _BranchScreenState extends State<BranchScreen> {
                   builder: (context) {
                     final _formKey = GlobalKey<FormState>();
                     TextEditingController _branchNameController =
-                        TextEditingController(text: "Islampur");
+                        TextEditingController();
                     TextEditingController _branchAddressController =
-                        TextEditingController(text: "Islam pur, Dhaka");
+                        TextEditingController();
 
                     Uint8List? imageBytes;
                     int? tableNumber;
