@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:dartz/dartz.dart';
 
 import 'package:kacchi_bari_admin_dashboard/core/network/failure.dart';
@@ -33,6 +35,7 @@ class ProductRepositoryImpl implements ProductRepository {
       final data = (response.data as List).map((e) => ProductModel.fromJson(e)).toList();
       return Right(data);
     }catch(error){
+      log(error.toString());
       return Left(ErrorHandler.handle(error).failure);
     }
   }

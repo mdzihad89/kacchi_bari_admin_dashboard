@@ -1,6 +1,6 @@
 import 'dart:developer';
 import 'dart:io';
-
+import 'dart:convert';
 import 'package:dio/dio.dart';
 import '../app/app_prefs.dart';
 import '../constants/app_constant.dart';
@@ -65,7 +65,11 @@ class ApiService {
           'image',
           MultipartFile.fromBytes(entry.value , filename: 'image.jpg'),
         ));
-      } else {
+      }
+      else if (entry.value is List || entry.value is Map) {
+        formData.fields.add(MapEntry(entry.key, jsonEncode(entry.value)));
+      }
+      else {
         formData.fields.add(MapEntry(entry.key, entry.value.toString()));
       }
     }

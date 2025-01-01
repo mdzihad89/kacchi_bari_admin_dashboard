@@ -121,6 +121,7 @@ class _BranchScreenState extends State<BranchScreen> {
                                         } else if (state is EmployeeFetchFailure) {
                                           return Text('Error: ${state.error}');
                                         } else if (state is EmployeeFetchSuccess) {
+
                                           return DropdownButtonFormField<EmployeeDropdownItem>(
                                             dropdownColor: ColorConstants.cardBackgroundColor,
                                               selectedItemBuilder: (BuildContext context) {
@@ -130,7 +131,9 @@ class _BranchScreenState extends State<BranchScreen> {
                                                   );
                                                 }).toList();
                                               },
-                                            items: state.employees.map((EmployeeModel employee) {
+                                            items: state.employees
+                                                .where((employee) => employee.role == 'manager')
+                                                .map((EmployeeModel employee) {
                                               return DropdownMenuItem<EmployeeDropdownItem>(
                                                 value:  EmployeeDropdownItem(id: employee.id, name: employee.name),
                                                 child: Padding(

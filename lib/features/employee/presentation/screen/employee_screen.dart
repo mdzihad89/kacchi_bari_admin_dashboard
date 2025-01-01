@@ -310,6 +310,7 @@ class _EmployeeScreenState extends State<EmployeeScreen> {
                        ],
                        rows: [
                           for(EmployeeModel employee in state.employees)
+
                             DataRow(
                               cells: [
                                 DataCell(
