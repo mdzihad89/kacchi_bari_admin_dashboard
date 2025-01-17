@@ -6,6 +6,7 @@ class BranchAddRequestDTO{
   String managerId;
   String managerName;
   String address;
+  String branchPhoneNumber;
   int table;
 
 
@@ -16,6 +17,7 @@ class BranchAddRequestDTO{
     required this.table,
     required this.address,
     required this.imageByte,
+    required this.branchPhoneNumber,
   });
   Map<String, dynamic> toMap() {
     return {
@@ -25,6 +27,7 @@ class BranchAddRequestDTO{
       'table': table,
       'address': address,
       'imageByte': imageByte,
+      'branchPhoneNumber': branchPhoneNumber,
     };
   }
 }

@@ -59,6 +59,9 @@ class _BranchScreenState extends State<BranchScreen> {
                     TextEditingController _branchAddressController =
                         TextEditingController();
 
+                    TextEditingController _branchPhoneController =
+                    TextEditingController();
+
                     Uint8List? imageBytes;
                     int? tableNumber;
                     String? managerId;
@@ -114,6 +117,10 @@ class _BranchScreenState extends State<BranchScreen> {
                                         labelText: "Branch Address",
                                         validatorText: "Branch Address is required",
                                         textEditingController: _branchAddressController),
+                                    CTextFormField(
+                                        labelText: "Branch Phone Number",
+                                        validatorText: "Branch Phone Number is required",
+                                        textEditingController: _branchPhoneController),
                                     BlocBuilder<EmployeeBloc, EmployeeState>(
                                       builder: (context, state) {
                                         if (state is EmployeeFetchLoading) {
@@ -125,7 +132,9 @@ class _BranchScreenState extends State<BranchScreen> {
                                           return DropdownButtonFormField<EmployeeDropdownItem>(
                                             dropdownColor: ColorConstants.cardBackgroundColor,
                                               selectedItemBuilder: (BuildContext context) {
-                                                return state.employees.map((employee) {
+                                                return state.employees
+                                                    .where((employee) => employee.role == 'manager')
+                                                .map((employee) {
                                                   return Text(employee.name.toString(),
                                                   style:  Theme.of(context).textTheme.bodyMedium,
                                                   );
@@ -275,6 +284,7 @@ class _BranchScreenState extends State<BranchScreen> {
                                           managerId: managerId!,
                                           managerName: managerName!,
                                           table: tableNumber!,
+                                          branchPhoneNumber: _branchPhoneController.text
                                         )
 
                                   ),);

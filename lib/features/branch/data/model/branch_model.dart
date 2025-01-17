@@ -12,6 +12,7 @@ class BranchModel {
   final String managerName;
   final String address;
   final int table;
+  final  String branchPhoneNumber;
   final String id;
 
   BranchModel({
@@ -22,6 +23,7 @@ class BranchModel {
     required this.managerName,
     required this.managerId,
     required this.table,
+    required this.branchPhoneNumber,
     required this.id,
   });
 
@@ -33,6 +35,7 @@ class BranchModel {
     address: json["address"],
     managerId: json["managerId"],
     managerName: json["managerName"],
+    branchPhoneNumber: json["branchPhoneNumber"],
     id: json["_id"],
   );
 
@@ -44,6 +47,7 @@ class BranchModel {
     "managerId": managerId,
     "managerName": managerName,
     "table": table,
+    "branchPhoneNumber": branchPhoneNumber,
     "_id": id,
   };
 }
