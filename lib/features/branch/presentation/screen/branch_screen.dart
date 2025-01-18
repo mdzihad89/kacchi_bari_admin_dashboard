@@ -62,6 +62,10 @@ class _BranchScreenState extends State<BranchScreen> {
                     TextEditingController _branchPhoneController =
                     TextEditingController();
 
+                    TextEditingController _branchbinNumberController =
+                    TextEditingController();
+
+
                     Uint8List? imageBytes;
                     int? tableNumber;
                     String? managerId;
@@ -121,6 +125,10 @@ class _BranchScreenState extends State<BranchScreen> {
                                         labelText: "Branch Phone Number",
                                         validatorText: "Branch Phone Number is required",
                                         textEditingController: _branchPhoneController),
+                                    CTextFormField(
+                                        labelText: "Branch Bin Number",
+                                        validatorText: "Branch Bin Number is required",
+                                        textEditingController: _branchbinNumberController),
                                     BlocBuilder<EmployeeBloc, EmployeeState>(
                                       builder: (context, state) {
                                         if (state is EmployeeFetchLoading) {
@@ -284,7 +292,8 @@ class _BranchScreenState extends State<BranchScreen> {
                                           managerId: managerId!,
                                           managerName: managerName!,
                                           table: tableNumber!,
-                                          branchPhoneNumber: _branchPhoneController.text
+                                          branchPhoneNumber: _branchPhoneController.text,
+                                          branchBinNumber: _branchbinNumberController.text,
                                         )
 
                                   ),);
