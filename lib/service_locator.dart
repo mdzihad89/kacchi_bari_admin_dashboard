@@ -6,6 +6,8 @@ import 'package:kacchi_bari_admin_dashboard/features/auth/domain/repository/auth
 import 'package:kacchi_bari_admin_dashboard/features/branch/data/repositories/branch_repo_impl.dart';
 import 'package:kacchi_bari_admin_dashboard/features/branch/domain/repository/branch_repository.dart';
 import 'package:kacchi_bari_admin_dashboard/features/category/data/repositories/category_repository_impl.dart';
+import 'package:kacchi_bari_admin_dashboard/features/dashboard/data/dashboard_repository_impl.dart';
+import 'package:kacchi_bari_admin_dashboard/features/dashboard/domain/dashboard_repository.dart';
 import 'package:kacchi_bari_admin_dashboard/features/employee/data/repositories/employee_repository_impl.dart';
 import 'package:kacchi_bari_admin_dashboard/features/employee/domain/repository/emplyee_repository.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -37,4 +39,8 @@ Future<void> initAppModule() async {
   instance.registerFactory<BranchRepository>(() => BranchRepositoryImpl(instance()));
   instance.registerFactory<CategoryRepository>(() => CategoryRepositoryImpl(instance()));
   instance.registerFactory<ProductRepository>(() => ProductRepositoryImpl(instance()));
+  instance.registerFactory<DashboardRepository>(() => DashboardRepositoryImpl(instance()));
+
+
+
 }

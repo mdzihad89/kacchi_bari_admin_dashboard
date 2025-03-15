@@ -54,10 +54,8 @@ class _BranchScreenState extends State<BranchScreen> {
                   context: context,
                   builder: (context) {
                     final _formKey = GlobalKey<FormState>();
-                    TextEditingController _branchNameController =
-                        TextEditingController();
-                    TextEditingController _branchAddressController =
-                        TextEditingController();
+                    TextEditingController _branchNameController = TextEditingController();
+                    TextEditingController _branchAddressController = TextEditingController();
 
                     TextEditingController _branchPhoneController =
                     TextEditingController();

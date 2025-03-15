@@ -1,10 +1,12 @@
-import 'package:flutter/material.dart';
+ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:kacchi_bari_admin_dashboard/features/auth/domain/repository/auth_repository.dart';
 import 'package:kacchi_bari_admin_dashboard/features/branch/presentation/bloc/branch_bloc.dart';
 import 'package:kacchi_bari_admin_dashboard/features/category/domain/repository/category_repository.dart';
 import 'package:kacchi_bari_admin_dashboard/features/category/presentation/bloc/category_bloc.dart';
+import 'package:kacchi_bari_admin_dashboard/features/dashboard/domain/dashboard_repository.dart';
+import 'package:kacchi_bari_admin_dashboard/features/dashboard/presentation/bloc/dashboard_bloc.dart';
 import 'package:kacchi_bari_admin_dashboard/features/employee/domain/repository/emplyee_repository.dart';
 import 'package:kacchi_bari_admin_dashboard/features/employee/presentation/bloc/employee_bloc.dart';
 import 'package:kacchi_bari_admin_dashboard/service_locator.dart';
@@ -47,6 +49,9 @@ class MyApp extends StatelessWidget {
         ),
         BlocProvider<ProductBloc>(
           create: (context)=>ProductBloc(productRepository:  instance<ProductRepository>(),),
+        ),
+        BlocProvider<DashboardBloc>(
+          create: (context)=>DashboardBloc(dashboardRepository:  instance<DashboardRepository>(),),
         ),
       ],
       child: MaterialApp.router(

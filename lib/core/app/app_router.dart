@@ -8,7 +8,7 @@ import 'package:kacchi_bari_admin_dashboard/features/category/presentation/scree
 import 'package:kacchi_bari_admin_dashboard/features/employee/presentation/screen/employee_screen.dart';
 import 'package:kacchi_bari_admin_dashboard/features/home_page/home_screen.dart';
 import 'package:kacchi_bari_admin_dashboard/features/prodduct/presentation/screen/product_screen.dart';
-import '../../features/dashboard/dashboard_screen.dart';
+import '../../features/dashboard/presentation/screen/dashboard_screen.dart';
 import '../../features/order/order_screen.dart';
 import '../common/error_page.dart';
 import 'app_prefs.dart';
