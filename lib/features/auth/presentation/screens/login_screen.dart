@@ -28,7 +28,6 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController passController = TextEditingController();
 
   bool passwordVisible = false;
-
   GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
 

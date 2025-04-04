@@ -51,6 +51,7 @@ dependencies:
   internet_connection_checker_plus: ^2.5.2
   file_picker: ^8.1.4
   intl:
+  flutter_slidable: ^4.0.0
 
 
 

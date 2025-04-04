@@ -10,9 +10,10 @@ import '../auth/presentation/bloc/event/auth_event.dart';
 import '../auth/presentation/bloc/state/auth_state.dart';
 
 class HomeScreen extends StatefulWidget {
-  final StatefulNavigationShell navigationShell;
+ final StatefulNavigationShell navigationShell;
 
   const HomeScreen({super.key, required this.navigationShell});
+
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -23,7 +24,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    _controller = SidebarXController(selectedIndex: widget.navigationShell.currentIndex);
+     _controller = SidebarXController(selectedIndex: widget.navigationShell.currentIndex);
     _controller.addListener(_onItemSelected);
   }
 
@@ -38,6 +39,7 @@ class _HomeScreenState extends State<HomeScreen> {
     setState(() {
       widget.navigationShell.goBranch(_controller.selectedIndex);
     });
+
   }
 
 
@@ -147,12 +149,18 @@ class _HomeScreenState extends State<HomeScreen> {
                       label: 'Order',
                       onTap: () {},
                     ),
+
+                    SidebarXItem(
+                      icon: Icons.money,
+                      label: 'Salary',
+                      onTap: () {},
+                    ),
                   ],
                 ),
                 Expanded(
                   child: Padding(
                     padding: const EdgeInsets.all(15.0),
-                    child: widget.navigationShell,
+                    child:  widget.navigationShell ,
                   ),
                 ),
               ],

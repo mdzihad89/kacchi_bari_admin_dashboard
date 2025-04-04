@@ -17,6 +17,5 @@ class AddEmployeeEvent extends EmployeeEvent {
   List<Object?> get props => [addEmployeeRequestDTO];
 }
 
-class FetchEmployeeEvent extends EmployeeEvent {
-}
+class FetchEmployeeEvent extends EmployeeEvent {}
 

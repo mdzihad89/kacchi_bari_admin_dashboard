@@ -10,6 +10,7 @@ import 'package:kacchi_bari_admin_dashboard/features/dashboard/data/dashboard_re
 import 'package:kacchi_bari_admin_dashboard/features/dashboard/domain/dashboard_repository.dart';
 import 'package:kacchi_bari_admin_dashboard/features/employee/data/repositories/employee_repository_impl.dart';
 import 'package:kacchi_bari_admin_dashboard/features/employee/domain/repository/emplyee_repository.dart';
+import 'package:kacchi_bari_admin_dashboard/features/salary/domain/staff_repository.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'core/app/app_prefs.dart';
 import 'core/network/api_service.dart';
@@ -18,6 +19,7 @@ import 'core/network/network_info.dart';
 import 'features/category/domain/repository/category_repository.dart';
 import 'features/prodduct/data/repositories/protuct_repository_impl.dart';
 import 'features/prodduct/domain/repository/product_repository.dart';
+import 'features/salary/data/repository/staff_repo_impl.dart';
 
 
 final instance = GetIt.instance;
@@ -40,6 +42,7 @@ Future<void> initAppModule() async {
   instance.registerFactory<CategoryRepository>(() => CategoryRepositoryImpl(instance()));
   instance.registerFactory<ProductRepository>(() => ProductRepositoryImpl(instance()));
   instance.registerFactory<DashboardRepository>(() => DashboardRepositoryImpl(instance()));
+  instance.registerFactory<StaffRepository>(() => StaffRepoImpl(instance()));
 
 
 

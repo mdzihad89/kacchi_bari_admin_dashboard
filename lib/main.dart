@@ -9,6 +9,8 @@ import 'package:kacchi_bari_admin_dashboard/features/dashboard/domain/dashboard_
 import 'package:kacchi_bari_admin_dashboard/features/dashboard/presentation/bloc/dashboard_bloc.dart';
 import 'package:kacchi_bari_admin_dashboard/features/employee/domain/repository/emplyee_repository.dart';
 import 'package:kacchi_bari_admin_dashboard/features/employee/presentation/bloc/employee_bloc.dart';
+import 'package:kacchi_bari_admin_dashboard/features/salary/domain/staff_repository.dart';
+import 'package:kacchi_bari_admin_dashboard/features/salary/presentation/bloc/staff_bloc.dart';
 import 'package:kacchi_bari_admin_dashboard/service_locator.dart';
 import 'core/app/app_router.dart';
 import 'package:flutter_web_plugins/url_strategy.dart';
@@ -18,6 +20,7 @@ import 'features/auth/presentation/bloc/bloc/auth_bloc.dart';
 import 'features/branch/domain/repository/branch_repository.dart';
 import 'features/prodduct/domain/repository/product_repository.dart';
 import 'features/prodduct/presentation/bloc/product_bloc.dart';
+import 'features/salary/presentation/bloc/staff_salary_payment/staff_salary_payment_bloc.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -53,13 +56,21 @@ class MyApp extends StatelessWidget {
         BlocProvider<DashboardBloc>(
           create: (context)=>DashboardBloc(dashboardRepository:  instance<DashboardRepository>(),),
         ),
+        BlocProvider<StaffBloc>(
+          create: (context)=>StaffBloc(staffRepository:  instance<StaffRepository>(),),
+        ),
+
+        BlocProvider<StaffSalaryPaymentBloc>(
+          create: (context)=>StaffSalaryPaymentBloc(staffRepository:  instance<StaffRepository>(),),
+        ),
       ],
       child: MaterialApp.router(
         routerConfig: AppRouter().router,
         title: 'Kacchi Bari',
         debugShowCheckedModeBanner: false,
+        themeMode:  ThemeMode.dark,
         theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple,brightness:  Brightness.dark),
           useMaterial3: true,
           textTheme: TextTheme(
             displaySmall: GoogleFonts.inter(fontSize: 11,fontWeight: FontWeight.w500, color: Colors.white),

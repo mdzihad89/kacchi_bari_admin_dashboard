@@ -60,11 +60,18 @@ class ApiService {
   Future<FormData> createFormData(Map<String, dynamic> data) async {
     final formData = FormData();
     for (var entry in data.entries) {
-      if (entry.key == 'imageByte' && entry.value != null) {
-        formData.files.add(MapEntry(
-          'image',
-          MultipartFile.fromBytes(entry.value , filename: 'image.jpg'),
-        ));
+      if ((entry.key == 'imageByte' || entry.key == 'staffImage' || entry.key == 'staffAttachment') && entry.value != null) {
+        if(entry.key == 'imageByte'){
+          formData.files.add(MapEntry(
+            entry.key,
+            MultipartFile.fromBytes(entry.value, filename: 'image.jpg'),
+          ));
+        }else{
+          formData.files.add(MapEntry(
+            entry.key,
+            MultipartFile.fromBytes(entry.value, filename: '${entry.key}.jpg'),
+          ));
+        }
       }
       else if (entry.value is List || entry.value is Map) {
         formData.fields.add(MapEntry(entry.key, jsonEncode(entry.value)));
@@ -91,13 +98,13 @@ class ApiService {
     var response = await _dio.post('${AppConstant.baseUrl}$endPoint', data: formData);
     return response;
   }
-  Future<Response> put({required String endPoint}) async {
-    var response = await _dio.put('${AppConstant.baseUrl}$endPoint');
+  Future<Response> put({required String endPoint ,dynamic data, dynamic params}) async {
+    var response = await _dio.put('${AppConstant.baseUrl}$endPoint', data: data, queryParameters: params);
     return response;
   }
 
-  Future<Response> delete({required String endPoint}) async {
-    var response = await _dio.delete('${AppConstant.baseUrl}$endPoint');
+  Future<Response> delete({required String endPoint , dynamic params}) async {
+    var response = await _dio.delete('${AppConstant.baseUrl}$endPoint', queryParameters: params);
     return response;
   }
 }

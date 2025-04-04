@@ -8,8 +8,12 @@ import 'package:kacchi_bari_admin_dashboard/features/category/presentation/scree
 import 'package:kacchi_bari_admin_dashboard/features/employee/presentation/screen/employee_screen.dart';
 import 'package:kacchi_bari_admin_dashboard/features/home_page/home_screen.dart';
 import 'package:kacchi_bari_admin_dashboard/features/prodduct/presentation/screen/product_screen.dart';
+import 'package:kacchi_bari_admin_dashboard/features/salary/presentation/screen/staff_screen.dart';
 import '../../features/dashboard/presentation/screen/dashboard_screen.dart';
 import '../../features/order/order_screen.dart';
+import '../../features/salary/data/model/staff_model.dart';
+import '../../features/salary/presentation/screen/add_staff_screen.dart';
+import '../../features/salary/presentation/screen/staff_details_screen.dart';
 import '../common/error_page.dart';
 import 'app_prefs.dart';
 
@@ -27,6 +31,7 @@ class AppRouter {
             navigationShell: navigationShell,
           );
         },
+
         branches: [
           StatefulShellBranch(
             routes: [
@@ -68,13 +73,34 @@ class AppRouter {
               ),
             ],
           ),
-
-
           StatefulShellBranch(
             routes: [
               GoRoute(
                 path: "/order",
                 builder: (context, state) => const OrderScreen(),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: "/staff",
+                builder: (context, state) => const StaffScreen(),
+                routes: [
+
+                  GoRoute(
+                    path: "create",
+                    builder: (context, state) => const AddStaffScreen(),
+                  ),
+                  GoRoute(
+                   path:  ":id",
+                    builder: (context, state) {
+
+                      final staffId = state.pathParameters['id']!;
+                      return StaffDetailsScreen(staffId: staffId );
+                    },
+                  ),
+                ],
               ),
             ],
           ),
