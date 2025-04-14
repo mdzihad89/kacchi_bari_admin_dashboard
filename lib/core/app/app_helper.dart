@@ -106,7 +106,7 @@ class AppHelper {
                               style: pw.TextStyle(fontSize: 12)),
                           pw.SizedBox(height: 10),
                           pw.Text(
-                            "Joining Date: ${DateFormat.yMMMd().format(staffSalaryReportModel.reportDate)}",
+                            "Joining Date: ${DateFormat.yMMMd().format(staffSalaryReportModel.joiningDate)}",
                             style: pw.TextStyle(fontSize: 12),
                           ),
                           pw.SizedBox(height: 10),
