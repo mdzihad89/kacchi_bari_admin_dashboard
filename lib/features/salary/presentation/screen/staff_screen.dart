@@ -27,6 +27,8 @@ class _StaffScreenState extends State<StaffScreen> {
 
   TextEditingController searchController = TextEditingController();
 
+  bool archived = false;
+
   @override
   void initState() {
      context.read<StaffBloc>().add(FetchStaffEvent());
@@ -37,15 +39,22 @@ class _StaffScreenState extends State<StaffScreen> {
 
   Timer? _debounce;
   List<StaffModel> _filterStaffList = [];
+  List<StaffModel> archivedList= [];
 
   void _onSearchChanged(String query) {
     if (_debounce?.isActive ?? false) _debounce?.cancel();
     _debounce = Timer(const Duration(milliseconds: 300), () {
       setState(() {
-        _filterStaffList =
-            context.read<StaffBloc>().staffList.where((staff) {
-              return staff.name.toLowerCase().contains(query.toLowerCase());
-            }).toList();
+        if(archived==true){
+          _filterStaffList = archivedList.where((staff) {
+                return staff.name.toLowerCase().contains(query.toLowerCase());
+              }).toList();
+        }else{
+          _filterStaffList =
+              context.read<StaffBloc>().staffList.where((staff) {
+                return staff.name.toLowerCase().contains(query.toLowerCase());
+              }).toList();
+        }
       });
     });
   }
@@ -100,7 +109,7 @@ class _StaffScreenState extends State<StaffScreen> {
             const SizedBox(
               width: 20,
             ),
-            ElevatedButton.icon(
+           if(archived==false) ElevatedButton.icon(
               onPressed: () {
 
                 context.go('/staff/create');
@@ -121,9 +130,31 @@ class _StaffScreenState extends State<StaffScreen> {
             const SizedBox(
               width: 20,
             ),
+            Switch(
+              value: archived,
+              onChanged: (value) {
+                setState(() {
+                  archived = value;
+                });
+
+                if(archived==true){
+                  context.read<StaffBloc>().add(FetchPreviousStaffEvent());
+                }else{
+                  context.read<StaffBloc>().add(FetchStaffEvent());
+                }
+              },
+            ),
+
+            const SizedBox(
+              width: 20,
+            ),
             IconButton(
                 onPressed: () {
-                  context.read<StaffBloc>().add(FetchStaffEvent());
+                  if(archived==true){
+                    context.read<StaffBloc>().add(FetchPreviousStaffEvent());
+                  }else{
+                    context.read<StaffBloc>().add(FetchStaffEvent());
+                  }
                 },
                 icon: const Icon(
                   Icons.refresh,
@@ -151,6 +182,10 @@ class _StaffScreenState extends State<StaffScreen> {
                     ),
                   );
                 } else if (state is StaffFetchSuccess) {
+                  if(archived==true){
+                    archivedList = state.staffs;
+                  }
+
                   final staffToShow = searchController.text.isEmpty
                       ? state.staffs
                       : _filterStaffList;

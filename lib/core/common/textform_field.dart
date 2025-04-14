@@ -4,14 +4,14 @@ import 'package:flutter/services.dart';
 import '../constants/color_constants.dart';
 
 class CTextFormField extends StatefulWidget {
-  final String labelText;
+  final String? labelText;
   final String validatorText;
   final TextEditingController textEditingController;
   final ValueChanged<String>? onChanged;
   final VoidCallback? onTap;
   final List<TextInputFormatter>? inputFormatters;
   final bool? readOnly;
-  const CTextFormField({super.key, required this.labelText, required this.validatorText, required this.textEditingController,this.onChanged, this.onTap, this.inputFormatters, this.readOnly});
+  const CTextFormField({super.key,  this.labelText, required this.validatorText, required this.textEditingController,this.onChanged, this.onTap, this.inputFormatters, this.readOnly});
 
   @override
   State<CTextFormField> createState() => _CTextFormFieldState();

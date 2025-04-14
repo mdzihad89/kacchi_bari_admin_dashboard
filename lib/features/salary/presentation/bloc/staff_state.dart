@@ -41,3 +41,44 @@ class StaffFetchFailure extends StaffState {
   List<Object?> get props => [error];
 }
 
+class StaffUpdateLoading extends StaffState {}
+class StaffUpdateSuccess extends StaffState {
+  const StaffUpdateSuccess();
+  @override
+  List<Object?> get props => [];
+}
+class StaffUpdateFailure extends StaffState {
+  final String error;
+  const StaffUpdateFailure(this.error);
+
+  @override
+  List<Object?> get props => [error];
+}
+
+
+class StaffDeleteLoading extends StaffState {}
+class StaffDeleteSuccess extends StaffState {
+  final String message;
+  const StaffDeleteSuccess( this.message);
+  @override
+  List<Object?> get props => [ message];
+}
+class StaffDeleteFailure extends StaffState {
+  final String error;
+  const StaffDeleteFailure(this.error);
+
+  @override
+  List<Object?> get props => [error];
+}
+
+class StaffCopyLoading extends StaffState {}
+
+class StaffCopySuccess extends StaffState {}
+
+class StaffCopyFailure extends StaffState {
+  final String error;
+  const StaffCopyFailure(this.error);
+
+  @override
+  List<Object?> get props => [error];
+}

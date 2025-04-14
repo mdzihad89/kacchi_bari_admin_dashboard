@@ -99,3 +99,32 @@ class AddLeaveEventFailure extends StaffSalaryPaymentState {
 
  class AddLeaveEventLoading extends StaffSalaryPaymentState {}
 
+
+//exit date update state
+class ExitDateUpdateLoading extends StaffSalaryPaymentState {}
+class ExitDateUpdateSuccess extends StaffSalaryPaymentState {
+  final String message;
+  const ExitDateUpdateSuccess(this.message);
+
+  @override
+  List<Object> get props => [message];
+}
+class ExitDateUpdateFailure extends StaffSalaryPaymentState {
+  final String error;
+  const ExitDateUpdateFailure(this.error);
+
+  @override
+  List<Object> get props => [error];
+}
+
+
+ //staff salary report download state
+class StaffSalaryReportDownloadLoading extends StaffSalaryPaymentState {}
+class StaffSalaryReportDownloadSuccess extends StaffSalaryPaymentState {}
+class StaffSalaryReportDownloadFailure extends StaffSalaryPaymentState {
+  final String error;
+  const StaffSalaryReportDownloadFailure(this.error);
+
+  @override
+  List<Object> get props => [error];
+}

@@ -3,7 +3,9 @@ import 'package:equatable/equatable.dart';
 
 import '../../../data/model/staff_add_leave_dto.dart';
 import '../../../data/model/staff_salary_payment_dto.dart';
+import '../../../data/model/staff_salary_payment_model.dart';
 import '../../../data/model/staff_salary_report_dto.dart';
+import '../../../data/model/staff_salary_report_model.dart';
 
 abstract class StaffSalaryPaymentEvent extends Equatable {
   const StaffSalaryPaymentEvent();
@@ -83,5 +85,35 @@ class RemoveLeaveEvent extends StaffSalaryPaymentEvent {
 }
 
 
+//Exit date update event
+class ExitDateUpdateEvent extends StaffSalaryPaymentEvent {
+  final String staffId;
+  final String exitDate;
+  const ExitDateUpdateEvent({required this.staffId, required this.exitDate});
+
+  @override
+  List<Object?> get props => [staffId, exitDate];
+}
+
+
+
+class DownloadSalaryReportEvent extends StaffSalaryPaymentEvent {
+
+  final StaffSalaryReportModel staffSalaryReportModel;
+  final List<DateTime> leaveDates;
+  final List<StaffSalaryPaymentModel> staffSalaryPaymentList;
+
+  const DownloadSalaryReportEvent( {
+    required this.staffSalaryReportModel,
+    required this.leaveDates,
+    required this.staffSalaryPaymentList,
+  });
+  @override
+  List<Object?> get props => [
+    staffSalaryReportModel,
+    leaveDates,
+    staffSalaryPaymentList,
+  ];
+}
 
 

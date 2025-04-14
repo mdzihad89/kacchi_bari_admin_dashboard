@@ -23,14 +23,10 @@ class AddStaffScreen extends StatefulWidget {
 
 class _AddStaffScreenState extends State<AddStaffScreen> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  final TextEditingController _nameController = TextEditingController(
 
+  final TextEditingController _nameController = TextEditingController(
   );
   final TextEditingController _fatherNameController = TextEditingController(
-
-  );
-  final TextEditingController _emailController = TextEditingController(
-
   );
   final TextEditingController _phoneController = TextEditingController(
   );
@@ -38,17 +34,22 @@ class _AddStaffScreenState extends State<AddStaffScreen> {
   );
   final TextEditingController _nidOrBirthCertificateNumberController = TextEditingController(
   );
-  final TextEditingController _birthdateController = TextEditingController();
+  final TextEditingController _birthdateController = TextEditingController(
+  );
   final TextEditingController _designationController = TextEditingController(
   );
-  final TextEditingController _joiningDateController = TextEditingController();
+  final TextEditingController _joiningDateController = TextEditingController(
+  );
   final TextEditingController _basicSalaryController = TextEditingController(
   );
+
+  final TextEditingController _guardianNumberController = TextEditingController(
+  );
+
 
 
   Uint8List? _staffImageBytes;
   Uint8List ? _staffAttachmentBytes;
-  String? _staffAttachmentName;
   String ? joiningDate;
 
   @override
@@ -58,15 +59,21 @@ class _AddStaffScreenState extends State<AddStaffScreen> {
       child: Form(
         key: _formKey,
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           spacing: 20,
           children: [
             Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.center,
               spacing: 20,
               children: [
+                IconButton(
+                  icon: Icon(Icons.arrow_back,color: ColorConstants.primaryColor,),
+                  onPressed: () {
+                    context.go('/staff');
+                  },
+                ),
                 PhotoCard(
                   levelText: "Photo",
                   onImagePicked: (imageBytes) {
@@ -89,7 +96,6 @@ class _AddStaffScreenState extends State<AddStaffScreen> {
                           Uint8List fileBytes = result.files.first.bytes!;
                           setState(() {
                             _staffAttachmentBytes = fileBytes;
-                            _staffAttachmentName = result.files.first.name;
                           });
                         }
                       },
@@ -111,13 +117,7 @@ class _AddStaffScreenState extends State<AddStaffScreen> {
                                 .textTheme
                                 .bodyMedium),
                           ],
-                        ) : Text(
-                          _staffAttachmentName!,
-                          style: Theme
-                              .of(context)
-                              .textTheme
-                              .bodyMedium,
-                        ),
+                        ) :    Image.memory(_staffAttachmentBytes!,fit: BoxFit.fitHeight,),
                       ),
                     ),
                   ),
@@ -150,10 +150,13 @@ class _AddStaffScreenState extends State<AddStaffScreen> {
               children: [
                 Expanded(
                   child: CTextFormField(
-                    validatorText: "Please enter your email",
-                    textEditingController: _emailController,
-                    labelText: "Email",
+                    validatorText: "Please enter your guardian's Number",
+                    textEditingController: _guardianNumberController,
+                    labelText: "Gauardian Number",
                     onChanged: (value) {},
+                    inputFormatters: [
+                      FilteringTextInputFormatter.digitsOnly,
+                    ],
                   ),
                 ),
                 Expanded(
@@ -316,11 +319,10 @@ class _AddStaffScreenState extends State<AddStaffScreen> {
                       final AddStaffDTO addStaffDTO = AddStaffDTO(
                         name: _nameController.text,
                         fatherName: _fatherNameController.text,
-                        email: _emailController.text,
+                        guardianNumber: _guardianNumberController.text,
                         phone: _phoneController.text,
                         address: _addressController.text,
-                        nidOrBirthCertificateNumber: _nidOrBirthCertificateNumberController
-                            .text,
+                        nidOrBirthCertificateNumber: _nidOrBirthCertificateNumberController.text,
                         birthdate: _birthdateController.text,
                         designation: _designationController.text,
                         joiningDate: joiningDate!,

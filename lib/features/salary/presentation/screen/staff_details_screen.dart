@@ -7,12 +7,15 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
+import 'package:kacchi_bari_admin_dashboard/core/app/app_helper.dart';
+import 'package:kacchi_bari_admin_dashboard/features/salary/presentation/bloc/staff_bloc.dart';
 import '../../../../core/common/textform_field.dart';
 import '../../../../core/constants/color_constants.dart';
 import '../../data/model/staff_add_leave_dto.dart';
 import '../../data/model/staff_salary_payment_dto.dart';
 import '../../data/model/staff_salary_payment_model.dart';
 import '../../data/model/staff_salary_report_dto.dart';
+import '../bloc/staff_event.dart';
 import '../bloc/staff_salary_payment/staff_salary_payemnt_event.dart';
 import '../bloc/staff_salary_payment/staff_salary_payment_bloc.dart';
 import '../bloc/staff_salary_payment/staff_salary_payment_state.dart';
@@ -31,6 +34,7 @@ class _StaffDetailsScreenState extends State<StaffDetailsScreen> {
   TextEditingController _leaveDateController = TextEditingController();
   TextEditingController _amountController = TextEditingController();
   TextEditingController searchController = TextEditingController();
+  TextEditingController _exitDateController = TextEditingController();
   GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   GlobalKey<FormState> _leaveFormKey = GlobalKey<FormState>();
   List<StaffSalaryPaymentModel> _filterStaffPaymentList = [];
@@ -38,8 +42,8 @@ class _StaffDetailsScreenState extends State<StaffDetailsScreen> {
   Timer? _debounce;
   DateTime? salaryPayStartDate;
   StaffSalaryPaymentModel? _selectedStaffSalaryPaymentModel;
-
-
+  String? _exitDate;
+  bool notFoundClick = false;
 
   void _onSearchChanged(String query) {
     if (_debounce?.isActive ?? false) _debounce?.cancel();
@@ -61,14 +65,12 @@ class _StaffDetailsScreenState extends State<StaffDetailsScreen> {
   void initState() {
     context
         .read<StaffSalaryPaymentBloc>()
-        .add(GetAllStaffSalaryPaymentByStaffId(staffId: widget.staffId));
-    context
-        .read<StaffSalaryPaymentBloc>()
         .add(FetchSingleStaffEvent(staffId: widget.staffId));
     super.initState();
   }
 
   List<String> leaveDays = [];
+  bool pdfGenerateLoading = false;
 
   @override
   void dispose() {
@@ -80,7 +82,11 @@ class _StaffDetailsScreenState extends State<StaffDetailsScreen> {
     super.dispose();
   }
 
-  GlobalKey _widgetKey = GlobalKey();
+  GlobalKey attachmentKey = GlobalKey();
+  GlobalKey dpKey = GlobalKey();
+
+  List<DateTime> leaveDates = [];
+  List<StaffSalaryPaymentModel> staffSalaryPaymentList = [];
 
   @override
   Widget build(BuildContext context) {
@@ -90,11 +96,12 @@ class _StaffDetailsScreenState extends State<StaffDetailsScreen> {
           children: [
             Expanded(
                 flex: 5,
-                child: BlocBuilder<StaffSalaryPaymentBloc, StaffSalaryPaymentState>(
+                child: BlocBuilder<StaffSalaryPaymentBloc,
+                    StaffSalaryPaymentState>(
                   buildWhen: (previous, current) {
                     return current is StaffFetchSingleSuccess ||
                         current is StaffFetchSingleLoading ||
-                        current is StaffFetchSingleSuccess||
+                        current is StaffFetchSingleSuccess ||
                         current is StaffFetchSingleFailure;
                   },
                   builder: (context, state) {
@@ -110,67 +117,97 @@ class _StaffDetailsScreenState extends State<StaffDetailsScreen> {
                         ),
                       );
                     } else if (state is StaffFetchSingleSuccess) {
+                      context.read<StaffSalaryPaymentBloc>().add(
+                          GetAllStaffSalaryPaymentByStaffId(
+                              staffId: widget.staffId));
+                      leaveDates = state.staff.leaveDays ?? [];
+
                       final staffModel = state.staff;
                       salaryPayStartDate = state.staff.joiningDate;
 
-                      log(staffModel.leaveDays.toString());
                       return Row(
                         children: [
                           Expanded(
                             flex: 2,
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              spacing: 10,
-                              children: [
-                                Container(
-                                  height: 200,
-                                  width: double.infinity,
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(10),
-                                    image: DecorationImage(
-                                      image:
-                                          NetworkImage(staffModel.staffImage),
-                                      fit: BoxFit.cover,
+                            child: SingleChildScrollView(
+                              scrollDirection: Axis.vertical,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                spacing: 10,
+                                children: [
+                                  InkWell(
+                                    key: dpKey,
+                                    onTap: () {
+                                      _scaleDialog(
+                                          staffModel.staffImage, dpKey);
+                                    },
+                                    child: Container(
+                                      height: 200,
+                                      width: double.infinity,
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(10),
+                                        image: DecorationImage(
+                                          image: NetworkImage(
+                                              staffModel.staffImage),
+                                          fit: BoxFit.cover,
+                                        ),
+                                      ),
                                     ),
                                   ),
-                                ),
-                                Text(
-                                  "Name : ${staffModel.name}",
-                                  style: Theme.of(context).textTheme.bodyMedium,
-                                ),
-                                Text(
-                                  "Father Name : ${staffModel.fatherName}",
-                                  style: Theme.of(context).textTheme.bodyMedium,
-                                ),
-                                Text(
-                                  "Number : ${staffModel.phone}",
-                                  style: Theme.of(context).textTheme.bodyMedium,
-                                ),
-                                Text(
-                                  "Address : ${staffModel.address}",
-                                  style: Theme.of(context).textTheme.bodyMedium,
-                                ),
-                                Text(
-                                  "Nid/Bc : ${staffModel.nidOrBirthCertificateNumber}",
-                                  style: Theme.of(context).textTheme.bodyMedium,
-                                ),
-                                Text(
-                                  "Join Date : ${DateFormat.yMMMd().format(staffModel.joiningDate)}",
-                                  style: Theme.of(context).textTheme.bodyMedium,
-                                ),
-                                Text(
-                                  "Salary : ${staffModel.basicSalary} Tk",
-                                  style: Theme.of(context).textTheme.bodyMedium,
-                                ),
-                                Text(
-                                  "Designation : ${staffModel.designation}",
-                                  style: Theme.of(context).textTheme.bodyMedium,
-                                ),
-                                SizedBox(
-                                  height: 50,
-                                  child: Row(
+                                  Text(
+                                    "Id : ${staffModel.icId}",
+                                    style:
+                                        Theme.of(context).textTheme.bodyMedium,
+                                  ),
+                                  Text(
+                                    "Name : ${staffModel.name}",
+                                    style:
+                                        Theme.of(context).textTheme.bodyMedium,
+                                  ),
+                                  Text(
+                                    "Father Name : ${staffModel.fatherName}",
+                                    style:
+                                        Theme.of(context).textTheme.bodyMedium,
+                                  ),
+                                  Text(
+                                    "Guardian Number : ${staffModel.guardianNumber}",
+                                    style:
+                                        Theme.of(context).textTheme.bodyMedium,
+                                  ),
+                                  Text(
+                                    "Number : ${staffModel.phone}",
+                                    style:
+                                        Theme.of(context).textTheme.bodyMedium,
+                                  ),
+                                  Text(
+                                    "Address : ${staffModel.address}",
+                                    style:
+                                        Theme.of(context).textTheme.bodyMedium,
+                                  ),
+                                  Text(
+                                    "Nid/Bc : ${staffModel.nidOrBirthCertificateNumber}",
+                                    style:
+                                        Theme.of(context).textTheme.bodyMedium,
+                                  ),
+                                  Text(
+                                    "Join Date : ${DateFormat.yMMMd().format(staffModel.joiningDate)}",
+                                    style:
+                                        Theme.of(context).textTheme.bodyMedium,
+                                  ),
+                                  Text(
+                                    "Salary : ${staffModel.basicSalary} Tk",
+                                    style:
+                                        Theme.of(context).textTheme.bodyMedium,
+                                  ),
+                                  Text(
+                                    "Designation : ${staffModel.designation}",
+                                    style:
+                                        Theme.of(context).textTheme.bodyMedium,
+                                  ),
+                                  Row(
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
+                                    mainAxisSize: MainAxisSize.min,
                                     children: [
                                       Text(
                                         "Attachment :  ",
@@ -179,17 +216,280 @@ class _StaffDetailsScreenState extends State<StaffDetailsScreen> {
                                             .bodyMedium,
                                       ),
                                       InkWell(
-                                        key: _widgetKey,
-                                        child: Icon(Icons.remove_red_eye),
+                                        key: attachmentKey,
                                         onTap: () {
-                                          _scaleDialog(staffModel.staffImage);
+                                          _scaleDialog(
+                                              staffModel.staffAttachment,
+                                              attachmentKey);
                                         },
                                         borderRadius: BorderRadius.circular(50),
+                                        child: Icon(Icons.remove_red_eye),
                                       )
                                     ],
                                   ),
-                                )
-                              ],
+                                  SizedBox(
+                                    height: 40,
+                                    child: Row(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                      // mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Text(
+                                          "Exit Date : ",
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .bodyMedium,
+                                        ),
+                                        staffModel.exitDate == null &&
+                                                notFoundClick == false
+                                            ? InkWell(
+                                                onTap: () {
+                                                  setState(() {
+                                                    notFoundClick = true;
+                                                  });
+                                                },
+                                                borderRadius:
+                                                    BorderRadius.circular(50),
+                                                child: Text(
+                                                  "Not Found",
+                                                  style: Theme.of(context)
+                                                      .textTheme
+                                                      .bodyMedium,
+                                                ),
+                                              )
+                                            : notFoundClick == true &&
+                                                    staffModel.exitDate == null
+                                                ? BlocConsumer<
+                                                    StaffSalaryPaymentBloc,
+                                                    StaffSalaryPaymentState>(
+                                                    listener: (context, state) {
+                                                      if (state
+                                                          is ExitDateUpdateSuccess) {
+                                                        ElegantNotification
+                                                            .success(
+                                                          title: const Text(
+                                                            "Success",
+                                                            style: TextStyle(
+                                                                color: Colors
+                                                                    .black),
+                                                          ),
+                                                          description: Text(
+                                                            state.message,
+                                                            style:
+                                                                const TextStyle(
+                                                                    color: Colors
+                                                                        .black),
+                                                            maxLines: 1,
+                                                          ),
+                                                          width: 300,
+                                                          height: 100,
+                                                        ).show(context);
+                                                        _exitDateController
+                                                            .clear();
+                                                        _exitDate = null;
+                                                        context
+                                                            .read<
+                                                                StaffSalaryPaymentBloc>()
+                                                            .add(FetchSingleStaffEvent(
+                                                                staffId: widget
+                                                                    .staffId));
+                                                        context
+                                                            .read<StaffBloc>()
+                                                            .add(
+                                                                FetchStaffEvent());
+                                                      } else if (state
+                                                          is ExitDateUpdateFailure) {
+                                                        ElegantNotification
+                                                            .error(
+                                                          title: const Text(
+                                                            "Error",
+                                                            style: TextStyle(
+                                                                color: Colors
+                                                                    .black),
+                                                          ),
+                                                          description: Text(
+                                                            state.error,
+                                                            style:
+                                                                const TextStyle(
+                                                                    color: Colors
+                                                                        .black),
+                                                            maxLines: 1,
+                                                            overflow:
+                                                                TextOverflow
+                                                                    .ellipsis,
+                                                          ),
+                                                          width: 300,
+                                                          height: 100,
+                                                        ).show(context);
+                                                      }
+                                                    },
+                                                    builder: (context, state) {
+                                                      if (state
+                                                          is ExitDateUpdateLoading) {
+                                                        return const Center(
+                                                          child:
+                                                              CircularProgressIndicator(
+                                                            color: Colors.white,
+                                                          ),
+                                                        );
+                                                      }
+                                                      return Row(
+                                                        crossAxisAlignment:
+                                                            CrossAxisAlignment
+                                                                .center,
+                                                        children: [
+                                                          SizedBox(
+                                                            width: 150,
+                                                            child: TextField(
+                                                                decoration:
+                                                                    InputDecoration(
+                                                                  enabledBorder:
+                                                                      OutlineInputBorder(
+                                                                    borderSide:
+                                                                        const BorderSide(
+                                                                            color:
+                                                                                ColorConstants.primaryColor),
+                                                                    borderRadius:
+                                                                        BorderRadius.circular(
+                                                                            10),
+                                                                  ),
+                                                                  focusedBorder:
+                                                                      OutlineInputBorder(
+                                                                    borderSide:
+                                                                        const BorderSide(
+                                                                            color:
+                                                                                ColorConstants.primaryColor),
+                                                                    borderRadius:
+                                                                        BorderRadius.circular(
+                                                                            10),
+                                                                  ),
+                                                                  errorBorder:
+                                                                      OutlineInputBorder(
+                                                                    borderSide:
+                                                                        const BorderSide(
+                                                                            color:
+                                                                                Colors.red),
+                                                                    borderRadius:
+                                                                        BorderRadius.circular(
+                                                                            10),
+                                                                  ),
+                                                                  border:
+                                                                      OutlineInputBorder(
+                                                                    borderSide:
+                                                                        const BorderSide(
+                                                                            color:
+                                                                                ColorConstants.primaryColor),
+                                                                    borderRadius:
+                                                                        BorderRadius.circular(
+                                                                            10),
+                                                                  ),
+                                                                  hintText:
+                                                                      "Exit Date",
+                                                                  hintStyle: Theme.of(
+                                                                          context)
+                                                                      .textTheme
+                                                                      .bodyMedium,
+                                                                ),
+                                                                controller:
+                                                                    _exitDateController,
+                                                                style: Theme.of(
+                                                                        context)
+                                                                    .textTheme
+                                                                    .bodyMedium,
+                                                                readOnly: true,
+                                                                maxLines: 1,
+                                                                onTap:
+                                                                    () async {
+                                                                  await showDatePicker(
+                                                                    context:
+                                                                        context,
+                                                                    initialDate:
+                                                                        DateTime
+                                                                            .now(),
+                                                                    firstDate: salaryPayStartDate ??
+                                                                        DateTime(
+                                                                            2025),
+                                                                    lastDate:
+                                                                        DateTime
+                                                                            .now(),
+                                                                  ).then(
+                                                                      (selectedDate) {
+                                                                    if (selectedDate !=
+                                                                        null) {
+                                                                      _exitDateController
+                                                                          .text = DateFormat
+                                                                              .yMMMd()
+                                                                          .format(
+                                                                              selectedDate);
+                                                                      _exitDate = selectedDate
+                                                                          .toUtc()
+                                                                          .toIso8601String();
+                                                                    }
+                                                                  });
+                                                                }),
+                                                          ),
+                                                          IconButton(
+                                                              onPressed: () {
+                                                                if (_exitDateController
+                                                                    .text
+                                                                    .isEmpty) {
+                                                                  ElegantNotification
+                                                                      .error(
+                                                                    title:
+                                                                        const Text(
+                                                                      "Error",
+                                                                      style: TextStyle(
+                                                                          color:
+                                                                              Colors.black),
+                                                                    ),
+                                                                    description:
+                                                                        const Text(
+                                                                      "Exit date is required",
+                                                                      style: TextStyle(
+                                                                          color:
+                                                                              Colors.black),
+                                                                      maxLines:
+                                                                          1,
+                                                                    ),
+                                                                    width: 300,
+                                                                    height: 100,
+                                                                  ).show(
+                                                                      context);
+                                                                } else {
+                                                                  context
+                                                                      .read<
+                                                                          StaffSalaryPaymentBloc>()
+                                                                      .add(
+                                                                        ExitDateUpdateEvent(
+                                                                            staffId:
+                                                                                widget.staffId,
+                                                                            exitDate: _exitDate!),
+                                                                      );
+                                                                }
+                                                              },
+                                                              icon: Icon(
+                                                                Icons.add,
+                                                                color: ColorConstants
+                                                                    .primaryColor,
+                                                              ))
+                                                        ],
+                                                      );
+                                                    },
+                                                  )
+                                                : Text(
+                                                    DateFormat.yMMMd().format(
+                                                        staffModel.exitDate!),
+                                                    style: Theme.of(context)
+                                                        .textTheme
+                                                        .bodyMedium,
+                                                  ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
                           Expanded(
@@ -200,119 +500,165 @@ class _StaffDetailsScreenState extends State<StaffDetailsScreen> {
                               child: Column(
                                 spacing: 10,
                                 children: [
-                                  Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    spacing: 10,
-                                    children: [
-                                      Expanded(
-                                        child: Form(
-                                          key : _leaveFormKey,
-                                          child: CTextFormField(
-                                            labelText: "Leave Date",
-                                            validatorText: "Date is required",
-                                            textEditingController: _leaveDateController,
-                                            readOnly: true,
-                                            onTap: () async {
-                                              await showDatePicker(
-                                                context: context,
-                                                initialDate: DateTime.now(),
-                                                firstDate: salaryPayStartDate ??
-                                                    DateTime(2025),
-                                                lastDate: DateTime.now(),
-                                              ).then((selectedDate) {
-                                                if (selectedDate != null) {
-                                                  _leaveDateController.text =
-                                                      DateFormat.yMMMd()
-                                                          .format(selectedDate);
-                                                  leaveDays.add(selectedDate
-                                                      .toUtc()
-                                                      .toIso8601String());
-                                                  // log(paymentDate.toString());
-                                                }
-                                              });
-                                            },
-                                          ),
-                                        ),
-                                      ),
-                                      SizedBox(
-                                        height: 50,
-                                        child: BlocConsumer<StaffSalaryPaymentBloc, StaffSalaryPaymentState>(
-                                          listener: (context, state) {
-                                            if(state is AddLeaveEventSuccess){
-
-                                              context.read<StaffSalaryPaymentBloc>().add(FetchSingleStaffEvent(staffId: widget.staffId));
-                                              ElegantNotification.success(
-                                                title: const Text(
-                                                  "Success",
-                                                  style: TextStyle(color: Colors.black),
+                                  staffModel.status == true
+                                      ? Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          spacing: 10,
+                                          children: [
+                                            Expanded(
+                                              child: Form(
+                                                key: _leaveFormKey,
+                                                child: CTextFormField(
+                                                  labelText: "Leave Date",
+                                                  validatorText:
+                                                      "Date is required",
+                                                  textEditingController:
+                                                      _leaveDateController,
+                                                  readOnly: true,
+                                                  onTap: () async {
+                                                    await showDatePicker(
+                                                      context: context,
+                                                      initialDate:
+                                                          DateTime.now(),
+                                                      firstDate:
+                                                          salaryPayStartDate ??
+                                                              DateTime(2025),
+                                                      lastDate: DateTime.now(),
+                                                    ).then((selectedDate) {
+                                                      if (selectedDate !=
+                                                          null) {
+                                                        _leaveDateController
+                                                            .text = DateFormat
+                                                                .yMMMd()
+                                                            .format(
+                                                                selectedDate);
+                                                        leaveDays.add(selectedDate
+                                                            .toUtc()
+                                                            .toIso8601String());
+                                                        // log(paymentDate.toString());
+                                                      }
+                                                    });
+                                                  },
                                                 ),
-                                                description:  Text(
-                                                  state.message,
-                                                  style: TextStyle(color: Colors.black),
-                                                  maxLines: 1,
-                                                ),
-                                                width: 300,
-                                                height: 100,
-                                              ).show(context);
+                                              ),
+                                            ),
+                                            SizedBox(
+                                              height: 50,
+                                              child: BlocConsumer<
+                                                  StaffSalaryPaymentBloc,
+                                                  StaffSalaryPaymentState>(
+                                                listener: (context, state) {
+                                                  if (state
+                                                      is AddLeaveEventSuccess) {
+                                                    context
+                                                        .read<
+                                                            StaffSalaryPaymentBloc>()
+                                                        .add(
+                                                            FetchSingleStaffEvent(
+                                                                staffId: widget
+                                                                    .staffId));
+                                                    ElegantNotification.success(
+                                                      title: const Text(
+                                                        "Success",
+                                                        style: TextStyle(
+                                                            color:
+                                                                Colors.black),
+                                                      ),
+                                                      description: Text(
+                                                        state.message,
+                                                        style: TextStyle(
+                                                            color:
+                                                                Colors.black),
+                                                        maxLines: 1,
+                                                      ),
+                                                      width: 300,
+                                                      height: 100,
+                                                    ).show(context);
 
-                                              _leaveDateController .clear();
-                                            }
-                                            else if (state is AddLeaveEventFailure){
+                                                    _leaveDateController
+                                                        .clear();
+                                                    leaveDays.clear();
+                                                  } else if (state
+                                                      is AddLeaveEventFailure) {
+                                                    ElegantNotification.error(
+                                                      title: const Text(
+                                                        "Error",
+                                                        style: TextStyle(
+                                                            color:
+                                                                Colors.black),
+                                                      ),
+                                                      description: Text(
+                                                        state.error,
+                                                        style: const TextStyle(
+                                                            color:
+                                                                Colors.black),
+                                                        maxLines: 1,
+                                                        overflow: TextOverflow
+                                                            .ellipsis,
+                                                      ),
+                                                      width: 300,
+                                                      height: 100,
+                                                    ).show(context);
 
-
-                                              ElegantNotification.error(
-                                                title: const Text(
-                                                  "Error",
-                                                  style: TextStyle(color: Colors.black),
-                                                ),
-                                                description: Text(
-                                                  state.error,
-                                                  style:
-                                                  const TextStyle(color: Colors.black),
-                                                  maxLines: 1,
-                                                  overflow: TextOverflow.ellipsis,
-                                                ),
-                                                width: 300,
-                                                height: 100,
-
-                                              ).show(context);
-
-                                              _leaveDateController.clear();
-
-                                            }
-                                          },
-                                          builder: (context, state) {
-                                            if (state is AddLeaveEventLoading) {
-                                              return const Center(
-                                                child: CircularProgressIndicator(color: Colors.white,),
-                                              );
-                                            }
-                                            return FloatingActionButton(
-                                              heroTag:  "leave",
-                                              onPressed: () {
-                                                if (_leaveFormKey.currentState!.validate()) {
-                                                  AddLeaveDto addLeaveDto = AddLeaveDto(staffId: widget.staffId, leaveDays: leaveDays,);
-                                                  context.read<StaffSalaryPaymentBloc>().add(AddLeaveEvent(addLeaveDto: addLeaveDto));
-                                                }
-                                              },
-                                              backgroundColor: ColorConstants.primaryColor,
-                                              child: const Icon(Icons.add,
-                                                  color: Colors.white),
-                                            );
-                                          },
-                                        ),
-                                      )
-                                    ],
-                                  ),
+                                                    _leaveDateController
+                                                        .clear();
+                                                    leaveDays.clear();
+                                                  }
+                                                },
+                                                builder: (context, state) {
+                                                  if (state
+                                                      is AddLeaveEventLoading) {
+                                                    return const Center(
+                                                      child:
+                                                          CircularProgressIndicator(
+                                                        color: Colors.white,
+                                                      ),
+                                                    );
+                                                  }
+                                                  return FloatingActionButton(
+                                                    heroTag: "leave",
+                                                    onPressed: () {
+                                                      if (_leaveFormKey
+                                                          .currentState!
+                                                          .validate()) {
+                                                        AddLeaveDto
+                                                            addLeaveDto =
+                                                            AddLeaveDto(
+                                                          staffId:
+                                                              widget.staffId,
+                                                          leaveDays: leaveDays,
+                                                        );
+                                                        context
+                                                            .read<
+                                                                StaffSalaryPaymentBloc>()
+                                                            .add(AddLeaveEvent(
+                                                                addLeaveDto:
+                                                                    addLeaveDto));
+                                                      }
+                                                    },
+                                                    backgroundColor:
+                                                        ColorConstants
+                                                            .primaryColor,
+                                                    child: const Icon(Icons.add,
+                                                        color: Colors.white),
+                                                  );
+                                                },
+                                              ),
+                                            )
+                                          ],
+                                        )
+                                      : const SizedBox.shrink(),
                                   Expanded(
-                                    flex: 3,
+                                    flex: 2,
                                     child: ListView.builder(
                                       itemCount: staffModel.leaveDays!.length,
                                       itemBuilder: (context, index) {
-                                        final leaveDates = DateFormat.yMMMd().format(staffModel.leaveDays![index]);
+                                        final leaveDates = DateFormat.yMMMd()
+                                            .format(
+                                                staffModel.leaveDays![index]);
                                         return Slidable(
                                           startActionPane: ActionPane(
                                             motion: const ScrollMotion(),
@@ -324,27 +670,33 @@ class _StaffDetailsScreenState extends State<StaffDetailsScreen> {
                                                       context: context,
                                                       builder: (context) {
                                                         return AlertDialog(
-                                                          title: const Text("Remove Day"),
+                                                          title: const Text(
+                                                              "Remove Day"),
                                                           content: const Text(
                                                               "Are you sure you want to remove this day?"),
                                                           actions: [
                                                             TextButton(
                                                               onPressed: () {
-                                                                Navigator.pop(context);
+                                                                Navigator.pop(
+                                                                    context);
                                                               },
                                                               child: const Text(
                                                                   "Cancel"),
                                                             ),
                                                             TextButton(
                                                               onPressed: () {
-
-                                                                context.read<
+                                                                context
+                                                                    .read<
                                                                         StaffSalaryPaymentBloc>()
                                                                     .add(
-                                                                  RemoveLeaveEvent(
-                                                                      staffId: widget.staffId,
-                                                                      leaveDate: staffModel.leaveDays![index].toUtc().toIso8601String()),
-                                                                );
+                                                                      RemoveLeaveEvent(
+                                                                          staffId: widget
+                                                                              .staffId,
+                                                                          leaveDate: staffModel
+                                                                              .leaveDays![index]
+                                                                              .toUtc()
+                                                                              .toIso8601String()),
+                                                                    );
                                                                 Navigator.pop(
                                                                     context);
                                                               },
@@ -363,7 +715,12 @@ class _StaffDetailsScreenState extends State<StaffDetailsScreen> {
                                             ],
                                           ),
                                           child: ListTile(
-                                            title: Text(leaveDates, style: Theme.of(context).textTheme.bodyMedium,),
+                                            title: Text(
+                                              leaveDates,
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .bodyMedium,
+                                            ),
                                             shape: RoundedRectangleBorder(
                                               borderRadius:
                                                   BorderRadius.circular(10),
@@ -405,9 +762,17 @@ class _StaffDetailsScreenState extends State<StaffDetailsScreen> {
                                     ],
                                   ),
                                   Expanded(
-                                      flex: 2,
+                                      flex: 3,
                                       child: BlocBuilder<StaffSalaryPaymentBloc,
                                           StaffSalaryPaymentState>(
+                                        buildWhen: (previous, current) {
+                                          return current
+                                                  is StaffSalaryReportLoading ||
+                                              current
+                                                  is StaffSalaryReportSuccess ||
+                                              current
+                                                  is StaffSalaryReportFailure;
+                                        },
                                         builder: (context, state) {
                                           if (state
                                               is StaffSalaryReportLoading) {
@@ -427,66 +792,164 @@ class _StaffDetailsScreenState extends State<StaffDetailsScreen> {
                                             );
                                           } else if (state
                                               is StaffSalaryReportSuccess) {
-                                            return Row(
-                                              spacing: 10,
-                                              // crossAxisAlignment:  CrossAxisAlignment.start,
-                                              // mainAxisAlignment: MainAxisAlignment.start,
+                                            return Column(
                                               children: [
-                                                Expanded(
-                                                    child: Column(
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.start,
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment.start,
+                                                Row(
                                                   spacing: 10,
                                                   children: [
-                                                    Text(
-                                                      "Report Date : ${DateFormat.yMMMd().format(state.staffSalaryReport.reportDate)}",
+                                                    Expanded(
+                                                      child: Column(
+                                                        crossAxisAlignment:
+                                                            CrossAxisAlignment
+                                                                .start,
+                                                        mainAxisAlignment:
+                                                            MainAxisAlignment
+                                                                .start,
+                                                        spacing: 10,
+                                                        children: [
+                                                          Text(
+                                                            "Report Date : ${DateFormat.yMMMd().format(state.staffSalaryReport.reportDate)}",
+                                                          ),
+                                                          Text(
+                                                              "Total Days : ${state.staffSalaryReport.totalDays} Days"),
+                                                          Text(
+                                                              "Leave Days : ${state.staffSalaryReport.leaveDays} Days"),
+                                                          Text(
+                                                              "WorkDays : ${state.staffSalaryReport.workedDays} Days"),
+                                                          Text(
+                                                            "Status : ${state.staffSalaryReport.status}",
+                                                            style: TextStyle(
+                                                                color: state.staffSalaryReport
+                                                                            .status ==
+                                                                        "Paid"
+                                                                    ? Colors
+                                                                        .green
+                                                                    : state.staffSalaryReport.status ==
+                                                                            "Due"
+                                                                        ? Colors
+                                                                            .red
+                                                                        : ColorConstants
+                                                                            .primaryColor),
+                                                          ),
+                                                        ],
+                                                      ),
                                                     ),
-                                                    Text(
-                                                        "Total Days : ${state.staffSalaryReport.totalDays} Days"),
-                                                    Text(
-                                                        "Leave Days : ${state.staffSalaryReport.leaveDays} Days"),
-                                                    Text(
-                                                        "WorkDays : ${state.staffSalaryReport.workedDays} Days"),
-                                                    Text(
-                                                        "Status : ${state.staffSalaryReport.status}",
-                                                      style: TextStyle(
-                                                          color: state.staffSalaryReport
-                                                              .status ==
-                                                              "Paid"
-                                                              ? Colors.green
-                                                              : state.staffSalaryReport
-                                                              .status ==
-                                                              "Due"
-                                                              ? Colors.red
-                                                              : ColorConstants
-                                                              .primaryColor),),
-
+                                                    Expanded(
+                                                        child: Column(
+                                                      spacing: 10,
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .start,
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .start,
+                                                      children: [
+                                                        Text(
+                                                            "Per Day Salary : ${state.staffSalaryReport.perDaySalary} Tk"),
+                                                        Text(
+                                                            "Payable: ${state.staffSalaryReport.payableAmount} Tk"),
+                                                        Text(
+                                                            "Total Paid : ${state.staffSalaryReport.totalPaid} Tk"),
+                                                        Text(
+                                                          "Net Amount : ${state.staffSalaryReport.netAmount} Tk",
+                                                        ),
+                                                      ],
+                                                    )),
                                                   ],
-                                                )),
-                                                Expanded(
-                                                    child: Column(
-                                                  spacing: 10,
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.start,
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment.start,
-                                                  children: [
-                                                    Text(
-                                                        "Per Day Salary : ${state.staffSalaryReport.perDaySalary} Tk"),
-                                                    Text(
-                                                        "Payable: ${state.staffSalaryReport.payableAmount} Tk"),
-
-                                                    Text(
-                                                        "Total Paid : ${state.staffSalaryReport.totalPaid} Tk"),
-                                                    Text(
-                                                      "Net Amount : ${state.staffSalaryReport.netAmount} Tk",
-
+                                                ),
+                                                SizedBox(height: 20,),
+                                                ElevatedButton(
+                                                    style: ElevatedButton
+                                                        .styleFrom(
+                                                      backgroundColor:
+                                                          ColorConstants
+                                                              .primaryColor,
+                                                      shape:
+                                                          RoundedRectangleBorder(
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(10),
+                                                      ),
+                                                      fixedSize: Size(180, 40),
                                                     ),
+                                                    onPressed: () async {
+                                                      context
+                                                          .read<
+                                                              StaffSalaryPaymentBloc>()
+                                                          .add(
+                                                              DownloadSalaryReportEvent(
+                                                            leaveDates:
+                                                                leaveDates,
+                                                            staffSalaryPaymentList:
+                                                                staffSalaryPaymentList,
+                                                            staffSalaryReportModel:
+                                                                state
+                                                                    .staffSalaryReport,
+                                                          ));
+                                                    },
+                                                    child: BlocConsumer<
+                                                        StaffSalaryPaymentBloc,
+                                                        StaffSalaryPaymentState>(
+                                                      listener: (context, state) {
 
-                                                  ],
-                                                )),
+                                                        if( state is StaffSalaryReportDownloadSuccess) {
+                                                          ElegantNotification
+                                                              .success(
+                                                            title: const Text(
+                                                              "Success",
+                                                              style: TextStyle(
+                                                                  color: Colors
+                                                                      .black),
+                                                            ),
+                                                            description:
+                                                            const Text(
+                                                              "Report Downloaded",
+                                                              style: TextStyle(
+                                                                  color: Colors
+                                                                      .black),
+                                                              maxLines: 1,
+                                                            ),
+                                                            width: 300,
+                                                            height: 100,
+                                                          ).show(context);
+                                                        }
+
+                                                        if (state
+                                                            is StaffSalaryReportDownloadFailure) {
+                                                          ElegantNotification
+                                                              .error(
+                                                            title: const Text(
+                                                              "Error",
+                                                              style: TextStyle(
+                                                                  color: Colors
+                                                                      .black),
+                                                            ),
+                                                            description: Text(
+                                                              state.error,
+                                                              style: const TextStyle(
+                                                                  color: Colors
+                                                                      .black),
+                                                              maxLines: 1,
+                                                              overflow:
+                                                                  TextOverflow
+                                                                      .ellipsis,
+                                                            ),
+                                                            width: 300,
+                                                            height: 100,
+                                                          ).show(context);
+                                                        }
+
+                                                      },
+                                                      builder: (context, state) {
+
+                                                        if(state is StaffSalaryReportDownloadLoading){
+                                                           return const Center(child:  CircularProgressIndicator(
+                                                             color: Colors.white,
+                                                           ),);
+                                                        }
+                                                        return Text("Download Report");
+                                                      },
+                                                    ))
                                               ],
                                             );
                                           }
@@ -707,6 +1170,7 @@ class _StaffDetailsScreenState extends State<StaffDetailsScreen> {
                               searchController.text.isEmpty
                                   ? state.staffSalaryPaymentList
                                   : _filterStaffPaymentList;
+                          staffSalaryPaymentList = state.staffSalaryPaymentList;
 
                           if (staffPaymentToShow.isEmpty) {
                             return Center(
@@ -861,7 +1325,10 @@ class _StaffDetailsScreenState extends State<StaffDetailsScreen> {
         ),
         Positioned(
           child: IconButton(
-            icon: Icon(Icons.arrow_back),
+            icon: const Icon(
+              Icons.arrow_back,
+              color: ColorConstants.primaryColor,
+            ),
             onPressed: () {
               context.go('/staff');
             },
@@ -883,7 +1350,7 @@ class _StaffDetailsScreenState extends State<StaffDetailsScreen> {
           children: [
             Image.network(
               imageUrl,
-              fit: BoxFit.cover,
+              fit: BoxFit.contain,
               width: MediaQuery.of(context).size.width,
               height: MediaQuery.of(context).size.height,
             ),
@@ -891,7 +1358,9 @@ class _StaffDetailsScreenState extends State<StaffDetailsScreen> {
               top: 10,
               right: 10,
               child: IconButton(
-                icon: Icon(Icons.close),
+                icon: Icon(
+                  Icons.close,
+                ),
                 onPressed: () {
                   Navigator.of(context, rootNavigator: true).pop();
                 },
@@ -903,7 +1372,7 @@ class _StaffDetailsScreenState extends State<StaffDetailsScreen> {
     );
   }
 
-  void _scaleDialog(String imageUrl) {
+  void _scaleDialog(String imageUrl, GlobalKey widgetKey) {
     showGeneralDialog(
       context: context,
       barrierDismissible: false,
@@ -913,7 +1382,7 @@ class _StaffDetailsScreenState extends State<StaffDetailsScreen> {
       transitionBuilder: (ctx, a1, a2, child) {
         var curve = Curves.easeInOut.transform(a1.value);
         RenderBox? boxs =
-            _widgetKey.currentContext!.findRenderObject() as RenderBox?;
+            widgetKey.currentContext!.findRenderObject() as RenderBox?;
         Offset posit = boxs!.localToGlobal(Offset.zero);
 
         return Transform.scale(

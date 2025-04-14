@@ -12,6 +12,7 @@ import 'package:kacchi_bari_admin_dashboard/features/salary/data/model/staff_sal
 import 'package:kacchi_bari_admin_dashboard/features/salary/data/model/staff_salary_payment_model.dart';
 import 'package:kacchi_bari_admin_dashboard/features/salary/data/model/staff_salary_report_dto.dart';
 import 'package:kacchi_bari_admin_dashboard/features/salary/data/model/staff_salary_report_model.dart';
+import 'package:kacchi_bari_admin_dashboard/features/salary/data/model/update_staff_dto.dart';
 
 import '../../../../core/network/api_service.dart';
 import '../../../../core/network/error_handle.dart';
@@ -139,6 +140,68 @@ class StaffRepoImpl implements StaffRepository {
     } catch (error) {
       return Left(ErrorHandler.handle(error).failure);
     }
+  }
+
+  @override
+  Future<Either<Failure, String>> exitDateUpdate(String staffId, String exitDate) async{
+
+    try {
+      final response = await _apiService.put(endPoint: "staff/update-exit-date", data: {"staffId": staffId, "exitDate": exitDate});
+      return Right(response.data["message"]);
+    } catch (error) {
+      return Left(ErrorHandler.handle(error).failure);
+    }
+  }
+
+  @override
+  Future<Either<Failure, List<StaffModel>>> fetchAllPreviousStaff() async{
+
+    try {
+      final response = await _apiService.get(endPoint: "staff/get-all-previous-staff");
+      final data = (response.data as List).map((e) => StaffModel.fromJson(e)).toList();
+      return Right(data);
+    } catch (error) {
+      return Left(ErrorHandler.handle(error).failure);
+    }
+  }
+
+  @override
+  Future<Either<Failure, StaffModel>> updateStaff(UpdateStaffDTO updateStaffDTO)async {
+
+    try {
+      final response = await _apiService.multiPartPut(endPoint: "staff/update-staff", data: updateStaffDTO.toMap());
+      final staffModel = StaffModel.fromJson(response.data);
+      return Right(staffModel);
+    } catch (error) {
+      return Left(ErrorHandler.handle(error).failure);
+    }
+  }
+
+  @override
+  Future<Either<Failure, String>> deleteStaff(String staffId) async{
+    try {
+
+      final response = await _apiService.delete(endPoint: "staff/delete-staff", params: {"id": staffId});
+      return Right(response.data["message"]);
+    } catch (error) {
+      return Left(ErrorHandler.handle(error).failure);
+    }
+
+  }
+
+  @override
+  Future<Either<Failure, StaffModel>> copyStaff(String staffId, String joiningDate, int basicSalary) async{
+
+    try {
+
+      final response = await _apiService.post(endPoint: "staff/copy-profile", data:  {"staffId": staffId, "joiningDate": joiningDate, "basicSalary": basicSalary});
+      final staffModel = StaffModel.fromJson(response.data);
+      return Right(staffModel);
+    } catch (error) {
+      return Left(ErrorHandler.handle(error).failure);
+    }
+
+
   }
 
 

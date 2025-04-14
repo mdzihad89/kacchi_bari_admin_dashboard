@@ -98,6 +98,12 @@ class ApiService {
     var response = await _dio.post('${AppConstant.baseUrl}$endPoint', data: formData);
     return response;
   }
+
+  Future<Response> multiPartPut({required String endPoint, required Map<String, dynamic> data}) async {
+    FormData formData = await createFormData(data);
+    var response = await _dio.put('${AppConstant.baseUrl}$endPoint', data: formData);
+    return response;
+  }
   Future<Response> put({required String endPoint ,dynamic data, dynamic params}) async {
     var response = await _dio.put('${AppConstant.baseUrl}$endPoint', data: data, queryParameters: params);
     return response;

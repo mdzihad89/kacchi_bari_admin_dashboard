@@ -10,6 +10,14 @@ class StaffSalaryReportModel{
   final DateTime reportDate;
   final int  totalDays;
   final int  leaveDays;
+  final DateTime joiningDate;
+  final DateTime? exitDate;
+  final String staffName;
+  final String staffDesignation;
+  final String staffImage;
+  final String basicSalary;
+  final String icId;
+
   const StaffSalaryReportModel({
     required this.staffId,
     required this.workedDays,
@@ -21,6 +29,14 @@ class StaffSalaryReportModel{
     required this.reportDate,
     required this.totalDays,
     required this.leaveDays,
+    required this.joiningDate,
+     this.exitDate,
+    required this.staffName,
+    required this.staffDesignation,
+    required this.staffImage,
+    required this.basicSalary,
+    required this.icId,
+
   });
   factory StaffSalaryReportModel.fromJson(Map<String, dynamic> json) {
     return StaffSalaryReportModel(
@@ -34,8 +50,13 @@ class StaffSalaryReportModel{
       reportDate:  DateTime.parse(json['reportDate'] as String).toLocal(),
       totalDays: json['totalDays'] as int,
       leaveDays: json['leaveDays'] as int,
+      joiningDate: DateTime.parse(json['joiningDate'] as String).toLocal(),
+      exitDate: json['exitDate'] != null ? DateTime.parse(json['exitDate'] as String).toLocal() : null,
+      staffName: json['staffName'] as String,
+      staffDesignation: json['staffDesignation'] as String,
+      staffImage: json['staffImage'] as String,
+      basicSalary: json['basicSalary'] as String,
+      icId: json['icId'] as String,
     );
   }
-
-
 }

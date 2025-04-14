@@ -1,7 +1,7 @@
-
 import 'dart:typed_data';
 
-class AddStaffDTO{
+class UpdateStaffDTO{
+  String staffId;
   String name;
   String fatherName;
   String guardianNumber;
@@ -10,12 +10,12 @@ class AddStaffDTO{
   String nidOrBirthCertificateNumber;
   String birthdate;
   String designation;
-  String joiningDate;
   String basicSalary;
-  Uint8List staffImage;
-  Uint8List staffAttachment;
+  Uint8List? staffImage;
+  Uint8List? staffAttachment;
 
-  AddStaffDTO({
+  UpdateStaffDTO({
+    required this.staffId,
     required this.name,
     required this.fatherName,
     required this.guardianNumber,
@@ -24,14 +24,16 @@ class AddStaffDTO{
     required this.nidOrBirthCertificateNumber,
     required this.birthdate,
     required this.designation,
-    required this.joiningDate,
     required this.basicSalary,
-    required this.staffImage,
-    required this.staffAttachment,
+     this.staffImage,
+     this.staffAttachment,
   });
 
+
+
   Map<String, dynamic> toMap() {
-    return {
+    final Map<String, dynamic> map = {
+      'staffId': staffId,
       'name': name,
       'fatherName': fatherName,
       'guardianNumber': guardianNumber,
@@ -40,10 +42,17 @@ class AddStaffDTO{
       'nidOrBirthCertificateNumber': nidOrBirthCertificateNumber,
       'birthdate': birthdate,
       'designation': designation,
-      'joiningDate': joiningDate,
       'basicSalary': basicSalary,
-      'staffImage': staffImage,
-      'staffAttachment': staffAttachment,
     };
+
+    if (staffImage != null) {
+      map['staffImage'] = staffImage;
+    }
+
+    if (staffAttachment != null) {
+      map['staffAttachment'] = staffAttachment;
+    }
+
+    return map;
   }
 }

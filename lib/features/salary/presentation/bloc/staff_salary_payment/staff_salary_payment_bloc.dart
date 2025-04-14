@@ -1,6 +1,7 @@
 
 
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:kacchi_bari_admin_dashboard/core/app/app_helper.dart';
 import 'package:kacchi_bari_admin_dashboard/features/salary/presentation/bloc/staff_salary_payment/staff_salary_payemnt_event.dart';
 import 'package:kacchi_bari_admin_dashboard/features/salary/presentation/bloc/staff_salary_payment/staff_salary_payment_state.dart';
 
@@ -21,6 +22,8 @@ class StaffSalaryPaymentBloc extends Bloc<StaffSalaryPaymentEvent, StaffSalaryPa
     on<FetchStaffSalaryReport>( _onFetchStaffSalaryReport);
     on<AddLeaveEvent>( _onAddLeaveEvent);
     on<RemoveLeaveEvent>( _onRemoveLeaveEvent);
+    on<ExitDateUpdateEvent>( _onExitDateUpdateEvent);
+    on<DownloadSalaryReportEvent> ( _onDownloadSalaryReportEvent);
 
   }
 
@@ -122,5 +125,30 @@ class StaffSalaryPaymentBloc extends Bloc<StaffSalaryPaymentEvent, StaffSalaryPa
             emit( AddLeaveEventSuccess(message));
       },
     );
+  }
+
+  void _onExitDateUpdateEvent(ExitDateUpdateEvent event, Emitter<StaffSalaryPaymentState> emit) async {
+    emit(ExitDateUpdateLoading());
+    final staffSalaryResult = await staffRepository.exitDateUpdate(event.staffId, event.exitDate);
+    staffSalaryResult.fold(
+          (failure) => emit(ExitDateUpdateFailure(failure.message)),
+          (message) {
+            emit( ExitDateUpdateSuccess(message));
+      },
+    );
+  }
+
+  void _onDownloadSalaryReportEvent(DownloadSalaryReportEvent event, Emitter<StaffSalaryPaymentState> emit) async {
+    emit(StaffSalaryReportDownloadLoading());
+    try{
+       await AppHelper.generateAndDownloadReportPdf(
+        event.staffSalaryReportModel,
+        event.leaveDates,
+        event.staffSalaryPaymentList,);
+      emit(StaffSalaryReportDownloadSuccess());
+
+    }catch(e){
+      emit(StaffSalaryReportDownloadFailure(e.toString()));
+    }
   }
 }
