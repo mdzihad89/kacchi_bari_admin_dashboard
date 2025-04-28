@@ -18,3 +18,14 @@ class FetchDashboardEvent extends DashboardEvent {
   List<Object?> get props => [branchId, date];
 
 }
+
+
+class FetchTopSellingItemsEvent extends DashboardEvent {
+  final String branchId;
+  final String date;
+
+  const FetchTopSellingItemsEvent({required this.branchId, required this.date});
+  @override
+  List<Object?> get props => [branchId, date];
+
+}

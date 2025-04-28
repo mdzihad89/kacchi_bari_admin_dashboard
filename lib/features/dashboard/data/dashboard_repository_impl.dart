@@ -1,9 +1,11 @@
 import 'package:dartz/dartz.dart';
 import 'package:kacchi_bari_admin_dashboard/core/network/api_service.dart';
 import 'package:kacchi_bari_admin_dashboard/core/network/failure.dart';
+import 'package:kacchi_bari_admin_dashboard/features/dashboard/data/model/top_selling_item.dart';
 
 import '../../../core/network/error_handle.dart';
 import '../domain/dashboard_repository.dart';
+import 'model/order_report_model.dart';
 
 class DashboardRepositoryImpl implements DashboardRepository {
 
@@ -12,14 +14,27 @@ class DashboardRepositoryImpl implements DashboardRepository {
   DashboardRepositoryImpl(this.apiService,);
 
   @override
-  Future<Either<Failure, String>> getSumOfNetPayable(String branchId, String date) async{
+  Future<Either<Failure, OrderReport>> getSumOfNetPayable(String branchId, String date) async{
     try {
-      final response = await apiService.get( endPoint: "order/sum-netpayable-amount?branchId=$branchId&date=$date");
-      return Right( response.data['totalNetPayableAmount'].toString());
+      final response = await apiService.get( endPoint: "order/get-order-report?branchId=$branchId&date=$date");
+        return Right(OrderReport.fromJson(response.data));
+
     } catch (error) {
       return Left(ErrorHandler.handle(error).failure);
     }
 
+  }
+
+  @override
+  Future<Either<Failure, List<TopSellingItemModel>>> getTopSellingItems(String branchId, String date) async{
+
+    try {
+      final response = await apiService.post( endPoint: "order/top-selling-items" , data:{"branchId": branchId, "date": date},);
+      final data = (response.data as List).map((e) => TopSellingItemModel.fromJson(e)).toList();
+      return Right(data);
+    } catch (error) {
+      return Left(ErrorHandler.handle(error).failure);
+    }
   }
 
 

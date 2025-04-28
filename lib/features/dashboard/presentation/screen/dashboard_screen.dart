@@ -1,3 +1,4 @@
+import 'package:elegant_notification/elegant_notification.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
@@ -24,6 +25,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
   BranchDropdownItem? _selectedBranch;
   TextEditingController _dateController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
+  String? selectedDateforFilter;
+
   @override
   void initState() {
     context.read<BranchBloc>().add(FetchBranchEvent());
@@ -32,8 +35,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   @override
   Widget build(BuildContext context) {
-
-    return  BlocConsumer<BranchBloc, BranchState>(
+    return BlocConsumer<BranchBloc, BranchState>(
       listener: (context, state) {
         // if(state is BranchFetchSuccess){
         //   _selectedBranch = BranchDropdownItem(id: state.branches.first.id, name: state.branches.first.name);
@@ -43,10 +45,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
       builder: (context, state) {
         if (state is BranchFetchSuccess) {
           return Column(
+            spacing: 10,
             children: [
               SizedBox(
                 height: 60,
-                child:  Form(
+                child: Form(
                   key: _formKey,
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -60,11 +63,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           controller: _dateController,
                           decoration: InputDecoration(
                             enabledBorder: OutlineInputBorder(
-                              borderSide: const BorderSide(color: ColorConstants.primaryColor),
+                              borderSide: const BorderSide(
+                                  color: ColorConstants.primaryColor),
                               borderRadius: BorderRadius.circular(10),
                             ),
                             focusedBorder: OutlineInputBorder(
-                              borderSide: const BorderSide(color: ColorConstants.primaryColor),
+                              borderSide: const BorderSide(
+                                  color: ColorConstants.primaryColor),
                               borderRadius: BorderRadius.circular(10),
                             ),
                             errorBorder: OutlineInputBorder(
@@ -72,25 +77,26 @@ class _DashboardScreenState extends State<DashboardScreen> {
                               borderRadius: BorderRadius.circular(10),
                             ),
                             border: OutlineInputBorder(
-                              borderSide: const BorderSide(color: ColorConstants.primaryColor),
+                              borderSide: const BorderSide(
+                                  color: ColorConstants.primaryColor),
                               borderRadius: BorderRadius.circular(10),
                             ),
                             hintText: "Select Date",
                             hintStyle: Theme.of(context).textTheme.bodyMedium,
                           ),
-                            onTap: () async {
-                              await showDatePicker(
-                                context: context,
-                                initialDate: DateTime.now(),
-                                firstDate: DateTime(1900),
-                                lastDate: DateTime.now(),
-                              ).then((selectedDate) {
-                                if (selectedDate != null) {
-                                  _dateController.text = DateFormat.yMd().format(selectedDate);
-
-                                }
-                              });
-                            },
+                          onTap: () async {
+                            await showDatePicker(
+                              context: context,
+                              initialDate: DateTime.now(),
+                              firstDate: DateTime(1900),
+                              lastDate: DateTime.now(),
+                            ).then((selectedDate) {
+                              if (selectedDate != null) {
+                                _dateController.text = DateFormat.yMMMd().format(selectedDate);
+                                selectedDateforFilter = selectedDate.toUtc().toIso8601String();
+                              }
+                            });
+                          },
                           readOnly: true,
                           validator: (value) {
                             if (value == null || value.isEmpty) {
@@ -98,36 +104,39 @@ class _DashboardScreenState extends State<DashboardScreen> {
                             }
                             return null;
                           },
-
                           style: Theme.of(context).textTheme.bodyMedium,
                         ),
                       ),
-                      const SizedBox(width: 10,),
+                      const SizedBox(
+                        width: 10,
+                      ),
                       SizedBox(
                         width: 200,
                         child: DropdownButtonFormField<BranchDropdownItem>(
                           dropdownColor: ColorConstants.cardBackgroundColor,
                           selectedItemBuilder: (BuildContext context) {
                             return state.branches.map((branch) {
-                              return Text(branch.name.toString(),
-                                style:  Theme.of(context).textTheme.bodyMedium,
+                              return Text(
+                                branch.name.toString(),
+                                style: Theme.of(context).textTheme.bodyMedium,
                               );
                             }).toList();
                           },
                           items: state.branches.map((BranchModel branch) {
                             return DropdownMenuItem<BranchDropdownItem>(
-                              value:  BranchDropdownItem(id: branch.id, name: branch.name),
+                              value: BranchDropdownItem(
+                                  id: branch.id, name: branch.name),
                               child: Padding(
                                   padding: const EdgeInsets.all(8.0),
                                   child: Text(
                                     branch.name.toString(),
-                                    style: Theme.of(context).textTheme.bodyMedium,
-                                  )
-                              ),
+                                    style:
+                                        Theme.of(context).textTheme.bodyMedium,
+                                  )),
                             );
                           }).toList(),
                           value: _selectedBranch,
-                          onChanged: ( branch) {
+                          onChanged: (branch) {
                             setState(() {
                               _selectedBranch = branch;
                             });
@@ -140,11 +149,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           },
                           decoration: InputDecoration(
                             enabledBorder: OutlineInputBorder(
-                              borderSide: const BorderSide(color: ColorConstants.primaryColor),
+                              borderSide: const BorderSide(
+                                  color: ColorConstants.primaryColor),
                               borderRadius: BorderRadius.circular(10),
                             ),
                             focusedBorder: OutlineInputBorder(
-                              borderSide: const BorderSide(color: ColorConstants.primaryColor),
+                              borderSide: const BorderSide(
+                                  color: ColorConstants.primaryColor),
                               borderRadius: BorderRadius.circular(10),
                             ),
                             errorBorder: OutlineInputBorder(
@@ -152,26 +163,31 @@ class _DashboardScreenState extends State<DashboardScreen> {
                               borderRadius: BorderRadius.circular(10),
                             ),
                             border: OutlineInputBorder(
-                              borderSide: const BorderSide(color: ColorConstants.primaryColor),
+                              borderSide: const BorderSide(
+                                  color: ColorConstants.primaryColor),
                               borderRadius: BorderRadius.circular(10),
                             ),
                           ),
                           padding: const EdgeInsets.all(0),
-                          hint: Text("Select Branch", style: Theme.of(context).textTheme.bodyMedium,),
-
+                          hint: Text(
+                            "Select Branch",
+                            style: Theme.of(context).textTheme.bodyMedium,
+                          ),
                         ),
                       ),
-                      const SizedBox(width: 10,),
+                      const SizedBox(
+                        width: 10,
+                      ),
                       ElevatedButton(
                         onPressed: () {
                           if (_formKey.currentState!.validate()) {
-
-                            context.read<DashboardBloc>().add(FetchDashboardEvent(branchId: _selectedBranch!.id, date: _dateController.text));
-
+                        context.read<DashboardBloc>().add(FetchDashboardEvent(branchId: _selectedBranch!.id, date: selectedDateforFilter!));
+                           // context.read<DashboardBloc>().add(FetchTopSellingItemsEvent(branchId: _selectedBranch!.id, date: selectedDateforFilter!));
                           }
+                          // print("Selected Branch: ${_selectedBranch?.id}, Selected Date: ${selectedDateforFilter}");
                         },
-
-                        style: ElevatedButton.styleFrom(backgroundColor: ColorConstants.primaryColor,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: ColorConstants.primaryColor,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(5),
                           ),
@@ -192,73 +208,320 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   spacing: 30,
                   children: [
                     Container(
-                        width: 200,
-                        decoration: BoxDecoration(
-                          color: ColorConstants. primaryColor,
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        padding:  const EdgeInsets.all(20),
-                        alignment: Alignment.center,
-                        child:BlocConsumer<DashboardBloc, DashboardState>(
-                          listener: (context, dashboardState) {
-                          },
-                          builder: (context, dashboardState) {
-                            if (dashboardState is DashboardLoaded) {
-                              return Column(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Text("Total Sell", style: Theme.of(context).textTheme.bodyLarge,),
-                                  const SizedBox(height: 10,),
-                                  Text("${dashboardState.totalNetPayableAmount} TK", style: Theme.of(context).textTheme.bodyLarge,),
-                                ],
-                              );
-                            } else if (dashboardState is DashboardLoading) {
-                              return const Center(child: CircularProgressIndicator());
-                            } else if (dashboardState is DashboardFailure) {
-                              return Text(dashboardState.error, style: const TextStyle(color: Colors.red), maxLines: 1, overflow: TextOverflow.ellipsis,);
-                            } else {
-                              return Container();
-                            }
-                          },
-                        )
-                    ),
-                    Container(
                       width: 200,
                       decoration: BoxDecoration(
-                        color: ColorConstants. primaryColor,
+                        color: ColorConstants.primaryColor,
                         borderRadius: BorderRadius.circular(10),
                       ),
-                      padding:  const EdgeInsets.all(20),
+                      padding: const EdgeInsets.all(20),
                       alignment: Alignment.center,
-                      // child: Column(
-                      //   crossAxisAlignment: CrossAxisAlignment.center,
-                      //   mainAxisAlignment:  MainAxisAlignment.center,
-                      //   children: [
-                      //     Text("Total Order", style: Theme.of(context).textTheme.bodyLarge,),
-                      //     const SizedBox(height: 10,),
-                      //     Text("00000", style: Theme.of(context).textTheme.bodyLarge,),
-                      //   ],
-                      // ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            "Total Sell",
+                            style: Theme.of(context).textTheme.bodyLarge,
+                          ),
+                          const SizedBox(
+                            height: 10,
+                          ),
+                          BlocConsumer<DashboardBloc, DashboardState>(
+                              listener: (context, state) {
+                            if (state is DashboardFailure) {
+                              ElegantNotification.error(
+                                title: const Text(
+                                  "Error",
+                                  style: TextStyle(color: Colors.black),
+                                ),
+                                description: Text(
+                                  state.error,
+                                  style: const TextStyle(color: Colors.black),
+                                  maxLines: 2,
+                                ),
+                                width: 300,
+                                height: 100,
+                              ).show(context);
+                            }
+                          }, builder: (context, state) {
+                            if (state is DashboardLoaded) {
+                              return Text(
+                                "${state.orderReport.totalNetPayableAmount} TK",
+                                style: Theme.of(context).textTheme.bodyLarge,
+                              );
+                            } else if (state is DashboardLoading) {
+                              return const Center(
+                                  child: CircularProgressIndicator());
+                            }
+                            return const SizedBox();
+                          }),
+                        ],
+                      ),
                     ),
-
                     Container(
                       width: 200,
                       decoration: BoxDecoration(
-                        color: ColorConstants. primaryColor,
+                        color: ColorConstants.primaryColor,
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      padding: const EdgeInsets.all(20),
+                      alignment: Alignment.center,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            "Total Order",
+                            style: Theme.of(context).textTheme.bodyLarge,
+                          ),
+                          const SizedBox(
+                            height: 10,
+                          ),
+                          BlocBuilder<DashboardBloc, DashboardState>(
+                              builder: (context, state) {
+                            if (state is DashboardLoaded) {
+                              return Text(
+                                state.orderReport.totalOrders.toString(),
+                                style: Theme.of(context).textTheme.bodyLarge,
+                              );
+                            } else if (state is DashboardLoading) {
+                              return const Center(
+                                  child: CircularProgressIndicator());
+                            }
+                            return const SizedBox();
+                          }),
+                        ],
+                      ),
+                    ),
+                    Container(
+                      width: 200,
+                      decoration: BoxDecoration(
+                        color: ColorConstants.primaryColor,
                         borderRadius: BorderRadius.circular(10),
                       ),
                     ),
                   ],
-
                 ),
-              )
+              ),
+              Expanded(
+                  child: Row(
+                    spacing: 10,
+                children: [
+                  Expanded(
+                    flex: 3,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: ColorConstants.primaryColor,
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      padding: const EdgeInsets.all(20),
+                      alignment: Alignment.center,
+                      child: Column(
+                        children: [
+                          Text(
+                            "Total Sold Items",
+                            style: Theme.of(context).textTheme.bodyLarge,
+                          ),
+                          Divider(
+                            color: Colors.white,
+                          ),
+                          Expanded(
+                            child: BlocBuilder<DashboardBloc, DashboardState>(
+                              builder: (context, state) {
+                                if(state is DashboardLoaded){
+                                  return SingleChildScrollView(
+                                    scrollDirection: Axis.vertical,
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      mainAxisSize: MainAxisSize.max,
+                                      children: [
+                                        Text(
+                                          "🍖 Mutton : ${state.orderReport.soldItems.muttonPiece}",
+                                          style: Theme.of(context).textTheme.bodyLarge,
+                                        ),
+                                        Text(
+                                          "🍗 Chicken : ${state.orderReport.soldItems.chickenPiece}",
+                                          style: Theme.of(context).textTheme.bodyLarge,
+                                        ),
+                                        Text(
+                                          "🍮 Firni : ${state.orderReport.soldItems.firniPiece}",
+                                          style: Theme.of(context).textTheme.bodyLarge,
+                                        ),
+                                        Text(
+                                          "🥤 Borhani : ${(state.orderReport.soldItems.borhaniMl/1000).toStringAsFixed(2)} Liter",
+                                          style: Theme.of(context).textTheme.bodyLarge,
+                                        ),
+
+                                        if (state.orderReport.soldItems.extraRice.isNotEmpty) ...[
+                                          Text(
+                                            "🍛 Extra Rice",
+                                            style: Theme.of(context).textTheme.bodyLarge,
+                                          ),
+                                          ...state.orderReport.soldItems.extraRice.entries.map(
+                                                (e) => Padding(
+                                              padding: const EdgeInsets.only(left: 20),
+                                              child: Text("• ${e.key} Tk x ${e.value}"),
+                                            ),
+                                          ),
+                                        ],
+                                        if (state.orderReport.soldItems.badamSharbat.isNotEmpty) ...[
+                                          Text(
+                                            "🥛 Badam Sharbat",
+                                            style: Theme.of(context).textTheme.bodyLarge,
+                                          ),
+                                          ...state.orderReport.soldItems.badamSharbat.entries.map(
+                                                (e) => Padding(
+                                              padding: const EdgeInsets.only(left: 20),
+                                              child: Text("• ${e.key} Tk x ${e.value}"),
+                                            ),
+                                          ),
+                                        ],
+                                        if (state.orderReport.soldItems.doi.isNotEmpty) ...[
+                                          Text(
+                                            "🧁 Doi",
+                                            style: Theme.of(context).textTheme.bodyLarge,
+                                          ),
+                                          ...state.orderReport.soldItems.doi.entries.map(
+                                                (e) => Padding(
+                                              padding: const EdgeInsets.only(left: 20),
+                                              child: Text("• ${e.key} Tk x ${e.value}"),
+                                            ),
+                                          ),
+                                        ],
+
+                                        if (state.orderReport.soldItems.softDrinks.isNotEmpty) ...[
+                                          Text(
+                                            "🧃 Soft Drinks",
+                                            style: Theme.of(context).textTheme.bodyLarge,
+                                          ),
+                                          ...state.orderReport.soldItems.softDrinks.entries.map(
+                                                (e) => Padding(
+                                                  padding: const EdgeInsets.only(left: 20),
+                                                  child: Text("• ${e.key} Tk x ${e.value}"),
+                                                ),
+                                          ),
+                                        ],
+                                        if (state.orderReport.soldItems.softDrinks.isNotEmpty) ...[
+                                          Text(
+                                            "💧 Water",
+                                            style: Theme.of(context).textTheme.bodyLarge,
+                                          ),
+                                          ...state.orderReport.soldItems.water.entries.map(
+                                                (e) => Padding(
+                                                  padding: const EdgeInsets.only(left: 20),
+                                                  child: Text("• ${e.key} Tk x ${e.value}"),
+                                                ),
+                                          ),
+                                        ],
+
+
+                                        if (state.orderReport.soldItems.jorda.isNotEmpty) ...[
+                                          Text(
+                                            "🍬 Jorda",
+                                            style: Theme.of(context).textTheme.bodyLarge,
+                                          ),
+                                          ...state.orderReport.soldItems.jorda.entries.map(
+                                                (e) => Padding(
+                                              padding: const EdgeInsets.only(left: 20),
+                                              child: Text("• ${e.key} Tk x ${e.value}"),
+                                            ),
+                                          ),
+                                        ],
+
+                                      ],
+                                    ),
+                                  );
+                                }else if(state is DashboardLoading){
+                                  return const Center(child: CircularProgressIndicator());
+                                }
+
+                                return const SizedBox();
+                              },
+                            ),
+                          )
+                        ],
+                      ),
+                    ),
+                  ),
+
+                  Expanded(
+                    flex: 3,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: ColorConstants.primaryColor,
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      padding: const EdgeInsets.all(20),
+                      alignment: Alignment.center,
+                      // child: Column(
+                      //   children: [
+                      //     Text(
+                      //       "Top Selling Items",
+                      //       style: Theme.of(context).textTheme.bodyLarge,
+                      //     ),
+                      //     const Divider(
+                      //       color: Colors.white,
+                      //     ),
+                      //     Expanded(
+                      //       child: BlocBuilder<DashboardBloc, DashboardState>(
+                      //         builder: (context, state) {
+                      //           if (state is TopSellingItemsLoaded) {
+                      //             return ListView(
+                      //               children: state.topSellingItems.map((item) {
+                      //                 return Padding(
+                      //                   padding: const EdgeInsets.symmetric(vertical: 8.0),
+                      //                   child: Material(
+                      //                     child: ListTile(
+                      //                       title: Text(item.productName),
+                      //                       trailing: Text(item.totalQuantity.toString(),style: Theme.of(context).textTheme.bodyMedium ),
+                      //                       subtitle: Text("${item.unitPrice} TK", ),
+                      //                       titleTextStyle:  Theme.of(context).textTheme.bodySmall,
+                      //                       subtitleTextStyle:  Theme.of(context).textTheme.bodyMedium,
+                      //                       tileColor: Colors.black,
+                      //
+                      //                     ),
+                      //                   ),
+                      //                 );
+                      //               }).toList(),
+                      //             );
+                      //           } else if (state is TopSellingItemsLoading) {
+                      //             return const Center(child: CircularProgressIndicator());
+                      //           }else if(state is  TopSellingItemsFailure) {
+                      //             return Center(
+                      //               child: Text(
+                      //                 state.error,
+                      //                 style: const TextStyle(color: Colors.red),
+                      //               ),
+                      //             );
+                      //           }
+                      //
+                      //
+                      //           return const SizedBox();
+                      //         },
+                      //       ),
+                      //
+                      //     )
+                      //   ],
+                      // ),
+                    ),
+                  ),
+                  Expanded(
+                    flex: 3,
+                    child: Container(),
+                  ),
+                ],
+              ))
             ],
           );
         } else if (state is BranchFetchLoading) {
           return const Center(child: CircularProgressIndicator());
         } else if (state is BranchFetchFailure) {
-          return  Text(state.error, style: const TextStyle(color: Colors.red),maxLines: 1,overflow: TextOverflow.ellipsis,);
+          return Text(
+            state.error,
+            style: const TextStyle(color: Colors.red),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          );
         } else {
           return Container();
         }

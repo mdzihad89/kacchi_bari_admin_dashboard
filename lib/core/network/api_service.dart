@@ -63,7 +63,7 @@ class ApiService {
       if ((entry.key == 'imageByte' || entry.key == 'staffImage' || entry.key == 'staffAttachment') && entry.value != null) {
         if(entry.key == 'imageByte'){
           formData.files.add(MapEntry(
-            entry.key,
+            "image",
             MultipartFile.fromBytes(entry.value, filename: 'image.jpg'),
           ));
         }else{
