@@ -181,10 +181,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       ElevatedButton(
                         onPressed: () {
                           if (_formKey.currentState!.validate()) {
-                        context.read<DashboardBloc>().add(FetchDashboardEvent(branchId: _selectedBranch!.id, date: selectedDateforFilter!));
-                           // context.read<DashboardBloc>().add(FetchTopSellingItemsEvent(branchId: _selectedBranch!.id, date: selectedDateforFilter!));
+                           context.read<DashboardBloc>().add(FetchDashboardEvent(branchId: _selectedBranch!.id, date: selectedDateforFilter!));
+                           //context.read<DashboardBloc>().add(FetchTopSellingItemsEvent(branchId: _selectedBranch!.id, date: selectedDateforFilter!));
                           }
-                          // print("Selected Branch: ${_selectedBranch?.id}, Selected Date: ${selectedDateforFilter}");
+
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: ColorConstants.primaryColor,
@@ -401,7 +401,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                                 ),
                                           ),
                                         ],
-                                        if (state.orderReport.soldItems.softDrinks.isNotEmpty) ...[
+                                        if (state.orderReport.soldItems.water.isNotEmpty) ...[
                                           Text(
                                             "💧 Water",
                                             style: Theme.of(context).textTheme.bodyLarge,
