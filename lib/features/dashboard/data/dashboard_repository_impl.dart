@@ -25,17 +25,7 @@ class DashboardRepositoryImpl implements DashboardRepository {
 
   }
 
-  @override
-  Future<Either<Failure, List<TopSellingItemModel>>> getTopSellingItems(String branchId, String date) async{
 
-    try {
-      final response = await apiService.post( endPoint: "order/top-selling-items" , data:{"branchId": branchId, "date": date},);
-      final data = (response.data as List).map((e) => TopSellingItemModel.fromJson(e)).toList();
-      return Right(data);
-    } catch (error) {
-      return Left(ErrorHandler.handle(error).failure);
-    }
-  }
 
 
 }

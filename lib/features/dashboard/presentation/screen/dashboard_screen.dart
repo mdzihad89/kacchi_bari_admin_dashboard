@@ -35,13 +35,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<BranchBloc, BranchState>(
-      listener: (context, state) {
-        // if(state is BranchFetchSuccess){
-        //   _selectedBranch = BranchDropdownItem(id: state.branches.first.id, name: state.branches.first.name);
-        //   context.read<DashboardBloc>().add(FetchDashboardEvent(branchId: state.branches.first.id, date: DateTime.now().toIso8601String()));
-        // }
-      },
+    return BlocBuilder<BranchBloc, BranchState>(
       builder: (context, state) {
         if (state is BranchFetchSuccess) {
           return Column(
@@ -182,7 +176,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         onPressed: () {
                           if (_formKey.currentState!.validate()) {
                            context.read<DashboardBloc>().add(FetchDashboardEvent(branchId: _selectedBranch!.id, date: selectedDateforFilter!));
-                           //context.read<DashboardBloc>().add(FetchTopSellingItemsEvent(branchId: _selectedBranch!.id, date: selectedDateforFilter!));
                           }
 
                         },
@@ -202,315 +195,323 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   ),
                 ),
               ),
-              SizedBox(
-                height: 150,
-                child: Row(
-                  spacing: 30,
-                  children: [
-                    Container(
-                      width: 200,
-                      decoration: BoxDecoration(
-                        color: ColorConstants.primaryColor,
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      padding: const EdgeInsets.all(20),
-                      alignment: Alignment.center,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            "Total Sell",
-                            style: Theme.of(context).textTheme.bodyLarge,
-                          ),
-                          const SizedBox(
-                            height: 10,
-                          ),
-                          BlocConsumer<DashboardBloc, DashboardState>(
-                              listener: (context, state) {
-                            if (state is DashboardFailure) {
-                              ElegantNotification.error(
-                                title: const Text(
-                                  "Error",
-                                  style: TextStyle(color: Colors.black),
-                                ),
-                                description: Text(
-                                  state.error,
-                                  style: const TextStyle(color: Colors.black),
-                                  maxLines: 2,
-                                ),
-                                width: 300,
-                                height: 100,
-                              ).show(context);
-                            }
-                          }, builder: (context, state) {
-                            if (state is DashboardLoaded) {
-                              return Text(
-                                "${state.orderReport.totalNetPayableAmount} TK",
-                                style: Theme.of(context).textTheme.bodyLarge,
-                              );
-                            } else if (state is DashboardLoading) {
-                              return const Center(
-                                  child: CircularProgressIndicator());
-                            }
-                            return const SizedBox();
-                          }),
-                        ],
-                      ),
-                    ),
-                    Container(
-                      width: 200,
-                      decoration: BoxDecoration(
-                        color: ColorConstants.primaryColor,
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      padding: const EdgeInsets.all(20),
-                      alignment: Alignment.center,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            "Total Order",
-                            style: Theme.of(context).textTheme.bodyLarge,
-                          ),
-                          const SizedBox(
-                            height: 10,
-                          ),
-                          BlocBuilder<DashboardBloc, DashboardState>(
-                              builder: (context, state) {
-                            if (state is DashboardLoaded) {
-                              return Text(
-                                state.orderReport.totalOrders.toString(),
-                                style: Theme.of(context).textTheme.bodyLarge,
-                              );
-                            } else if (state is DashboardLoading) {
-                              return const Center(
-                                  child: CircularProgressIndicator());
-                            }
-                            return const SizedBox();
-                          }),
-                        ],
-                      ),
-                    ),
-                    Container(
-                      width: 200,
-                      decoration: BoxDecoration(
-                        color: ColorConstants.primaryColor,
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
               Expanded(
                   child: Row(
                     spacing: 10,
                 children: [
-                  Expanded(
-                    flex: 3,
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: ColorConstants.primaryColor,
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      padding: const EdgeInsets.all(20),
-                      alignment: Alignment.center,
-                      child: Column(
-                        children: [
-                          Text(
-                            "Total Sold Items",
-                            style: Theme.of(context).textTheme.bodyLarge,
-                          ),
-                          Divider(
-                            color: Colors.white,
-                          ),
-                          Expanded(
-                            child: BlocBuilder<DashboardBloc, DashboardState>(
-                              builder: (context, state) {
-                                if(state is DashboardLoaded){
-                                  return SingleChildScrollView(
-                                    scrollDirection: Axis.vertical,
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      mainAxisSize: MainAxisSize.max,
-                                      children: [
-                                        Text(
-                                          "🍖 Mutton : ${state.orderReport.soldItems.muttonPiece}",
-                                          style: Theme.of(context).textTheme.bodyLarge,
-                                        ),
-                                        Text(
-                                          "🍗 Chicken : ${state.orderReport.soldItems.chickenPiece}",
-                                          style: Theme.of(context).textTheme.bodyLarge,
-                                        ),
-                                        Text(
-                                          "🍮 Firni : ${state.orderReport.soldItems.firniPiece}",
-                                          style: Theme.of(context).textTheme.bodyLarge,
-                                        ),
-                                        Text(
-                                          "🥤 Borhani : ${(state.orderReport.soldItems.borhaniMl/1000).toStringAsFixed(2)} Liter",
-                                          style: Theme.of(context).textTheme.bodyLarge,
-                                        ),
-
-                                        if (state.orderReport.soldItems.extraRice.isNotEmpty) ...[
-                                          Text(
-                                            "🍛 Extra Rice",
-                                            style: Theme.of(context).textTheme.bodyLarge,
-                                          ),
-                                          ...state.orderReport.soldItems.extraRice.entries.map(
-                                                (e) => Padding(
-                                              padding: const EdgeInsets.only(left: 20),
-                                              child: Text("• ${e.key} Tk x ${e.value}"),
-                                            ),
-                                          ),
-                                        ],
-                                        if (state.orderReport.soldItems.badamSharbat.isNotEmpty) ...[
-                                          Text(
-                                            "🥛 Badam Sharbat",
-                                            style: Theme.of(context).textTheme.bodyLarge,
-                                          ),
-                                          ...state.orderReport.soldItems.badamSharbat.entries.map(
-                                                (e) => Padding(
-                                              padding: const EdgeInsets.only(left: 20),
-                                              child: Text("• ${e.key} Tk x ${e.value}"),
-                                            ),
-                                          ),
-                                        ],
-                                        if (state.orderReport.soldItems.doi.isNotEmpty) ...[
-                                          Text(
-                                            "🧁 Doi",
-                                            style: Theme.of(context).textTheme.bodyLarge,
-                                          ),
-                                          ...state.orderReport.soldItems.doi.entries.map(
-                                                (e) => Padding(
-                                              padding: const EdgeInsets.only(left: 20),
-                                              child: Text("• ${e.key} Tk x ${e.value}"),
-                                            ),
-                                          ),
-                                        ],
-
-                                        if (state.orderReport.soldItems.softDrinks.isNotEmpty) ...[
-                                          Text(
-                                            "🧃 Soft Drinks",
-                                            style: Theme.of(context).textTheme.bodyLarge,
-                                          ),
-                                          ...state.orderReport.soldItems.softDrinks.entries.map(
-                                                (e) => Padding(
-                                                  padding: const EdgeInsets.only(left: 20),
-                                                  child: Text("• ${e.key} Tk x ${e.value}"),
-                                                ),
-                                          ),
-                                        ],
-                                        if (state.orderReport.soldItems.water.isNotEmpty) ...[
-                                          Text(
-                                            "💧 Water",
-                                            style: Theme.of(context).textTheme.bodyLarge,
-                                          ),
-                                          ...state.orderReport.soldItems.water.entries.map(
-                                                (e) => Padding(
-                                                  padding: const EdgeInsets.only(left: 20),
-                                                  child: Text("• ${e.key} Tk x ${e.value}"),
-                                                ),
-                                          ),
-                                        ],
-
-
-                                        if (state.orderReport.soldItems.jorda.isNotEmpty) ...[
-                                          Text(
-                                            "🍬 Jorda",
-                                            style: Theme.of(context).textTheme.bodyLarge,
-                                          ),
-                                          ...state.orderReport.soldItems.jorda.entries.map(
-                                                (e) => Padding(
-                                              padding: const EdgeInsets.only(left: 20),
-                                              child: Text("• ${e.key} Tk x ${e.value}"),
-                                            ),
-                                          ),
-                                        ],
-
-                                      ],
+                   SizedBox(
+                    width: 200,
+                    child: Column(
+                      spacing: 10,
+                      children: [
+                              Container(
+                                height: 150,
+                                decoration: BoxDecoration(
+                                  color: ColorConstants.primaryColor,
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                padding: const EdgeInsets.all(20),
+                                alignment: Alignment.center,
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      "Total Sell",
+                                      style: Theme.of(context).textTheme.bodyLarge,
                                     ),
-                                  );
-                                }else if(state is DashboardLoading){
-                                  return const Center(child: CircularProgressIndicator());
-                                }
+                                    const SizedBox(
+                                      height: 10,
+                                    ),
+                                    BlocConsumer<DashboardBloc, DashboardState>(
+                                        listener: (context, state) {
+                                      if (state is DashboardFailure) {
+                                        ElegantNotification.error(
+                                          title: const Text(
+                                            "Error",
+                                            style: TextStyle(color: Colors.black),
+                                          ),
+                                          description: Text(
+                                            state.error,
+                                            style: const TextStyle(color: Colors.black),
+                                            maxLines: 2,
+                                          ),
+                                          width: 300,
+                                          height: 100,
+                                        ).show(context);
+                                      }
+                                    }, builder: (context, state) {
+                                      if (state is DashboardLoaded) {
+                                        return Text(
+                                          "${state.orderReport.totalNetPayableAmount} TK",
+                                          style: Theme.of(context).textTheme.bodyLarge,
+                                        );
+                                      } else if (state is DashboardLoading) {
+                                        return const Center(
+                                            child: CircularProgressIndicator());
+                                      }
+                                      return const SizedBox();
+                                    }),
+                                  ],
+                                ),
+                              ),
+                              Container(
+                                height: 150,
+                                decoration: BoxDecoration(
+                                  color: ColorConstants.primaryColor,
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                padding: const EdgeInsets.symmetric(vertical: 20,horizontal: 10),
+                                alignment: Alignment.center,
+                                child: BlocBuilder<DashboardBloc, DashboardState>(
+                                    builder: (context, state) {
+                                      if (state is DashboardLoaded) {
+                                        return Column(
+                                          mainAxisAlignment: MainAxisAlignment.center,
+                                          crossAxisAlignment: CrossAxisAlignment.center,
+                                          children: [
+                                            Text("Subtotal: ${state.orderReport.totalSubtotalAmount}TK",
+                                              style: Theme.of(context).textTheme.bodyMedium,
+                                            ),
+                                            Text("Discount : ${state.orderReport.totalDiscountAmount} TK",
+                                              style: Theme.of(context).textTheme.bodyMedium,
+                                            ),
+                                          ],
+                                        );
+                                      } else if (state is DashboardLoading) {
+                                        return const Center(
+                                            child: CircularProgressIndicator());
+                                      }
+                                      return const SizedBox();
+                                    })
+                              ),
+                              Expanded(
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    color: ColorConstants.primaryColor,
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  alignment:  Alignment.center,
 
-                                return const SizedBox();
-                              },
-                            ),
-                          )
-                        ],
-                      ),
+                                  child:BlocBuilder<DashboardBloc, DashboardState>(
+                                      builder: (context, state) {
+                                        if (state is DashboardLoaded) {
+                                          return Column(
+                                            mainAxisAlignment: MainAxisAlignment.center,
+                                            crossAxisAlignment: CrossAxisAlignment.center,
+                                            children: [
+                                              Text("Total Order : ${state.orderReport.totalOrders.toString()}",
+                                                style: Theme.of(context).textTheme.bodyLarge,
+                                              ),
+                                              ...state.orderReport.orderTypeCounts.map((e) => Text(
+                                                "${e.orderType} : ${e.orderCount}",
+                                                style: Theme.of(context).textTheme.bodyMedium,
+                                              )),
+                                            ],
+                                          );
+                                        } else if (state is DashboardLoading) {
+                                          return const Center(child: CircularProgressIndicator());
+                                        }
+                                        return const SizedBox();
+                                      }) ,
+                                ),
+                              ),
+                      ],
                     ),
                   ),
+                   Expanded(
+                        flex: 3,
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: ColorConstants.primaryColor,
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          padding: const EdgeInsets.all(20),
+                          alignment: Alignment.center,
+                          child: Column(
+                            children: [
+                              Text(
+                                "Total Sold Items",
+                                style: Theme.of(context).textTheme.bodyLarge,
+                              ),
+                              const Divider(
+                                color: Colors.white,
+                              ),
+                              Expanded(
+                                child: BlocBuilder<DashboardBloc, DashboardState>(
+                                  builder: (context, state) {
+                                    if(state is DashboardLoaded){
+                                      return SingleChildScrollView(
+                                        scrollDirection: Axis.vertical,
+                                        child: Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          mainAxisSize: MainAxisSize.max,
+                                          children: [
+                                            Text(
+                                              "🍖 Mutton : ${state.orderReport.soldItems.muttonPiece}",
+                                              style: Theme.of(context).textTheme.bodyLarge,
+                                            ),
+                                            Text(
+                                              "🍗 Chicken : ${state.orderReport.soldItems.chickenPiece}",
+                                              style: Theme.of(context).textTheme.bodyLarge,
+                                            ),
+                                            Text(
+                                              "🍮 Firni : ${state.orderReport.soldItems.firniPiece}",
+                                              style: Theme.of(context).textTheme.bodyLarge,
+                                            ),
+                                            Text(
+                                              "🥤 Borhani : ${(state.orderReport.soldItems.borhaniMl/1000).toStringAsFixed(2)} Liter",
+                                              style: Theme.of(context).textTheme.bodyLarge,
+                                            ),
 
-                  Expanded(
-                    flex: 3,
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: ColorConstants.primaryColor,
-                        borderRadius: BorderRadius.circular(10),
+                                            if (state.orderReport.soldItems.extraRice.isNotEmpty) ...[
+                                              Text(
+                                                "🍛 Extra Rice",
+                                                style: Theme.of(context).textTheme.bodyLarge,
+                                              ),
+                                              ...state.orderReport.soldItems.extraRice.entries.map(
+                                                    (e) => Padding(
+                                                  padding: const EdgeInsets.only(left: 20),
+                                                  child: Text("• ${e.key} Tk x ${e.value}"),
+                                                ),
+                                              ),
+                                             ],
+                                            if (state.orderReport.soldItems.badamSharbat.isNotEmpty) ...[
+                                              Text(
+                                                "🥛 Badam Sharbat",
+                                                style: Theme.of(context).textTheme.bodyLarge,
+                                              ),
+                                              ...state.orderReport.soldItems.badamSharbat.entries.map(
+                                                    (e) => Padding(
+                                                  padding: const EdgeInsets.only(left: 20),
+                                                  child: Text("• ${e.key} Tk x ${e.value}"),
+                                                ),
+                                              ),
+                                            ],
+                                            if (state.orderReport.soldItems.doi.isNotEmpty) ...[
+                                              Text(
+                                                "🧁 Doi",
+                                                style: Theme.of(context).textTheme.bodyLarge,
+                                              ),
+                                              ...state.orderReport.soldItems.doi.entries.map(
+                                                    (e) => Padding(
+                                                  padding: const EdgeInsets.only(left: 20),
+                                                  child: Text("• ${e.key} Tk x ${e.value}"),
+                                                ),
+                                              ),
+                                            ],
+
+                                            if (state.orderReport.soldItems.softDrinks.isNotEmpty) ...[
+                                              Text(
+                                                "🧃 Soft Drinks",
+                                                style: Theme.of(context).textTheme.bodyLarge,
+                                              ),
+                                              ...state.orderReport.soldItems.softDrinks.entries.map(
+                                                    (e) => Padding(
+                                                      padding: const EdgeInsets.only(left: 20),
+                                                      child: Text("• ${e.key} Tk x ${e.value}"),
+                                                    ),
+                                              ),
+                                            ],
+                                            if (state.orderReport.soldItems.water.isNotEmpty) ...[
+                                              Text(
+                                                "💧 Water",
+                                                style: Theme.of(context).textTheme.bodyLarge,
+                                              ),
+                                              ...state.orderReport.soldItems.water.entries.map(
+                                                    (e) => Padding(
+                                                      padding: const EdgeInsets.only(left: 20),
+                                                      child: Text("• ${e.key} Tk x ${e.value}"),
+                                                    ),
+                                              ),
+                                            ],
+
+
+                                            if (state.orderReport.soldItems.jorda.isNotEmpty) ...[
+                                              Text(
+                                                "🍬 Jorda",
+                                                style: Theme.of(context).textTheme.bodyLarge,
+                                              ),
+                                              ...state.orderReport.soldItems.jorda.entries.map(
+                                                    (e) => Padding(
+                                                  padding: const EdgeInsets.only(left: 20),
+                                                  child: Text("• ${e.key} Tk x ${e.value}"),
+                                                ),
+                                              ),
+                                            ],
+
+                                          ],
+                                        ),
+                                      );
+                                    }else if(state is DashboardLoading){
+                                      return const Center(child: CircularProgressIndicator());
+                                    }
+
+                                    return const SizedBox();
+                                  },
+                                ),
+                              )
+                            ],
+                          ),
+                        ),
                       ),
-                      padding: const EdgeInsets.all(20),
-                      alignment: Alignment.center,
-                      // child: Column(
-                      //   children: [
-                      //     Text(
-                      //       "Top Selling Items",
-                      //       style: Theme.of(context).textTheme.bodyLarge,
-                      //     ),
-                      //     const Divider(
-                      //       color: Colors.white,
-                      //     ),
-                      //     Expanded(
-                      //       child: BlocBuilder<DashboardBloc, DashboardState>(
-                      //         builder: (context, state) {
-                      //           if (state is TopSellingItemsLoaded) {
-                      //             return ListView(
-                      //               children: state.topSellingItems.map((item) {
-                      //                 return Padding(
-                      //                   padding: const EdgeInsets.symmetric(vertical: 8.0),
-                      //                   child: Material(
-                      //                     child: ListTile(
-                      //                       title: Text(item.productName),
-                      //                       trailing: Text(item.totalQuantity.toString(),style: Theme.of(context).textTheme.bodyMedium ),
-                      //                       subtitle: Text("${item.unitPrice} TK", ),
-                      //                       titleTextStyle:  Theme.of(context).textTheme.bodySmall,
-                      //                       subtitleTextStyle:  Theme.of(context).textTheme.bodyMedium,
-                      //                       tileColor: Colors.black,
-                      //
-                      //                     ),
-                      //                   ),
-                      //                 );
-                      //               }).toList(),
-                      //             );
-                      //           } else if (state is TopSellingItemsLoading) {
-                      //             return const Center(child: CircularProgressIndicator());
-                      //           }else if(state is  TopSellingItemsFailure) {
-                      //             return Center(
-                      //               child: Text(
-                      //                 state.error,
-                      //                 style: const TextStyle(color: Colors.red),
-                      //               ),
-                      //             );
-                      //           }
-                      //
-                      //
-                      //           return const SizedBox();
-                      //         },
-                      //       ),
-                      //
-                      //     )
-                      //   ],
-                      // ),
-                    ),
-                  ),
-                  Expanded(
-                    flex: 3,
-                    child: Container(),
-                  ),
+                   Expanded(
+                        flex: 3,
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: ColorConstants.primaryColor,
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          padding: const EdgeInsets.all(20),
+                          alignment: Alignment.center,
+                          child: Column(
+                            children: [
+                              Text(
+                                "Top Selling Items",
+                                style: Theme.of(context).textTheme.bodyLarge,
+                              ),
+                              const Divider(
+                                color: Colors.white,
+                              ),
+                              Expanded(
+                                child: BlocBuilder<DashboardBloc, DashboardState>(
+                                  builder: (context, state) {
+                                    if (state is DashboardLoaded) {
+                                      return ListView(
+                                        children: state.orderReport.topSellingItems.map((item) {
+                                          return Padding(
+                                            padding: const EdgeInsets.symmetric(vertical: 8.0),
+                                            child: Material(
+                                              child: ListTile(
+                                                title: Text(item.productName),
+                                                trailing: Text(item.totalQuantity.toString(),style: Theme.of(context).textTheme.bodyMedium ),
+                                                subtitle: Text("${item.unitPrice} TK", ),
+                                                titleTextStyle:  Theme.of(context).textTheme.bodySmall,
+                                                subtitleTextStyle:  Theme.of(context).textTheme.bodyMedium,
+                                                tileColor: Colors.black,
+
+                                              ),
+                                            ),
+                                          );
+                                        }).toList(),
+                                      );
+                                    } else if (state is DashboardLoading) {
+                                      return const Center(child: CircularProgressIndicator());
+                                    }
+
+                                    return const SizedBox();
+                                  },
+                                ),
+
+                              )
+                            ],
+                          ),
+                        ),
+                      ),
                 ],
-              ))
+              ),
+              )
+
             ],
           );
         } else if (state is BranchFetchLoading) {

@@ -1,3 +1,44 @@
+import 'package:kacchi_bari_admin_dashboard/features/dashboard/data/model/top_selling_item.dart';
+
+class OrderReport {
+  final int totalNetPayableAmount;
+  final int totalOrders;
+  final SoldItems soldItems;
+  final List<TopSellingItemModel> topSellingItems;
+  final List<OrderTypeCount> orderTypeCounts;
+  final int totalDiscountAmount;
+  final int totalSubtotalAmount;
+
+
+  OrderReport({
+    required this.totalNetPayableAmount,
+    required this.totalOrders,
+    required this.soldItems,
+    required this.topSellingItems,
+    required this.orderTypeCounts,
+    required this.totalDiscountAmount,
+    required this.totalSubtotalAmount,
+
+  });
+
+  factory OrderReport.fromJson(Map<String, dynamic> json) {
+    return OrderReport(
+      totalNetPayableAmount: json['totalNetPayableAmount'] ?? 0,
+      totalOrders: json['totalOrders'] ?? 0,
+      orderTypeCounts: (json['orderTypeCounts'] as List)
+          .map((item) => OrderTypeCount.fromJson(item))
+          .toList(),
+      soldItems: SoldItems.fromJson(json['soldItems'] ?? {}),
+      topSellingItems: (json['topSellingItems'] as List)
+          .map((item) => TopSellingItemModel.fromJson(item))
+          .toList(),
+      totalDiscountAmount: json['totalDiscountAmount'] ?? 0,
+      totalSubtotalAmount: json['totalSubtotalAmount'] ?? 0,
+    );
+  }
+}
+
+
 class SoldItems {
   final int muttonPiece;
   final int chickenPiece;
@@ -41,22 +82,19 @@ class SoldItems {
   }
 }
 
-class OrderReport {
-  final int totalNetPayableAmount;
-  final int totalOrders;
-  final SoldItems soldItems;
 
-  OrderReport({
-    required this.totalNetPayableAmount,
-    required this.totalOrders,
-    required this.soldItems,
+class OrderTypeCount{
+  final String orderType;
+  final int orderCount;
+  OrderTypeCount({
+    required this.orderType,
+    required this.orderCount,
   });
 
-  factory OrderReport.fromJson(Map<String, dynamic> json) {
-    return OrderReport(
-      totalNetPayableAmount: json['totalNetPayableAmount'] ?? 0,
-      totalOrders: json['totalOrders'] ?? 0,
-      soldItems: SoldItems.fromJson(json['soldItems'] ?? {}),
+  factory OrderTypeCount.fromJson(Map<String, dynamic> json) {
+    return OrderTypeCount(
+      orderType: json['orderType'] ?? '',
+      orderCount: json['orderCount'] ?? 0,
     );
   }
 }

@@ -6,5 +6,4 @@ import '../data/model/order_report_model.dart';
 
 abstract class DashboardRepository {
   Future<Either<Failure, OrderReport>> getSumOfNetPayable(String branchId, String date);
-  Future<Either<Failure, List<TopSellingItemModel>>> getTopSellingItems(String branchId, String date);
 }

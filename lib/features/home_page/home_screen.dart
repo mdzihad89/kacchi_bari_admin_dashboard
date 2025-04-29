@@ -129,7 +129,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       onTap: () {},
                     ),
                     SidebarXItem(
-                      icon: Icons.category,
+                      icon: Icons.home,
                       label: 'Branch',
                       onTap: () {},
                     ),
@@ -145,13 +145,13 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
 
                     SidebarXItem(
-                      icon: Icons.ac_unit,
+                      icon: Icons.card_travel,
                       label: 'Order',
                       onTap: () {},
                     ),
 
                     SidebarXItem(
-                      icon: Icons.money,
+                      icon: Icons.currency_bitcoin,
                       label: 'Salary',
                       onTap: () {},
                     ),

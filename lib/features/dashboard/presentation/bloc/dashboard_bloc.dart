@@ -11,8 +11,6 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
 
   DashboardBloc({required this.dashboardRepository}) : super(DashBoardInitial()){
     on<FetchDashboardEvent>(_onFetchDashboard);
-    on<FetchTopSellingItemsEvent>(_onFetchTopSellingItems);
-
   }
 
   Future<void> _onFetchDashboard(FetchDashboardEvent event, Emitter<DashboardState> emit) async {
@@ -25,12 +23,5 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
   }
 
 
-  Future<void> _onFetchTopSellingItems(FetchTopSellingItemsEvent event, Emitter<DashboardState> emit) async {
-    emit(TopSellingItemsLoading());
-    final result = await dashboardRepository.getTopSellingItems(event.branchId, event.date);
-    result.fold(
-          (failure) => emit(TopSellingItemsFailure(failure.message)),
-          (topSellingItems) => emit(TopSellingItemsLoaded(topSellingItems)),
-    );
-  }
+
 }

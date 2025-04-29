@@ -30,21 +30,3 @@ class DashboardFailure extends DashboardState {
   List<Object?> get props => [error];
 }
 
-
-class TopSellingItemsLoading extends DashboardState {}
-
-class TopSellingItemsLoaded extends DashboardState {
-  final List<TopSellingItemModel> topSellingItems;
-  const TopSellingItemsLoaded(this.topSellingItems);
-
-  @override
-  List<Object?> get props => [topSellingItems];
-}
-
-class TopSellingItemsFailure extends DashboardState {
-  final String error;
-  const TopSellingItemsFailure(this.error);
-
-  @override
-  List<Object?> get props => [error];
-}
