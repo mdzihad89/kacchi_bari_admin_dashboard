@@ -15,7 +15,7 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
 
   Future<void> _onFetchDashboard(FetchDashboardEvent event, Emitter<DashboardState> emit) async {
     emit(DashboardLoading());
-    final result = await dashboardRepository.getSumOfNetPayable(event.branchId, event.date);
+    final result = await dashboardRepository.getSumOfNetPayable(event.branchId, event.localStartTime, event.localEndTime);
     result.fold(
           (failure) => emit(DashboardFailure(failure.message)),
           (orderReport) => emit(DashboardLoaded(orderReport)),

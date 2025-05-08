@@ -55,6 +55,11 @@ dependencies:
   super_banners: ^0.0.1
   pdf: ^3.11.3
   printing: ^5.14.2
+  paged_datatable:
+    path: ./paged_datatable
+
+
+
 
 
 

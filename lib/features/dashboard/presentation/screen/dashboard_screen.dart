@@ -25,7 +25,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
   BranchDropdownItem? _selectedBranch;
   TextEditingController _dateController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
-  String? selectedDateforFilter;
+
+  String? localStartTime;
+  String? localEndTime;
 
   @override
   void initState() {
@@ -87,7 +89,17 @@ class _DashboardScreenState extends State<DashboardScreen> {
                             ).then((selectedDate) {
                               if (selectedDate != null) {
                                 _dateController.text = DateFormat.yMMMd().format(selectedDate);
-                                selectedDateforFilter = selectedDate.toUtc().toIso8601String();
+
+                                 final startTime = DateTime(
+                                  selectedDate.year,
+                                  selectedDate.month,
+                                  selectedDate.day,
+                                  6,
+                                  0,
+                                );
+                                localStartTime = startTime.toUtc().toIso8601String();
+                                localEndTime = startTime.add(const Duration(days: 1)).toUtc().toIso8601String();
+
                               }
                             });
                           },
@@ -175,9 +187,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       ElevatedButton(
                         onPressed: () {
                           if (_formKey.currentState!.validate()) {
-                           context.read<DashboardBloc>().add(FetchDashboardEvent(branchId: _selectedBranch!.id, date: selectedDateforFilter!));
+                           context.read<DashboardBloc>().add(FetchDashboardEvent(branchId: _selectedBranch!.id, localStartTime: localStartTime!,localEndTime: localEndTime!));
                           }
-
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: ColorConstants.primaryColor,
@@ -511,7 +522,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 ],
               ),
               )
-
             ],
           );
         } else if (state is BranchFetchLoading) {

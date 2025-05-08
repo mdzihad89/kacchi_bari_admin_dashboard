@@ -11,7 +11,7 @@ import 'package:kacchi_bari_admin_dashboard/features/prodduct/presentation/scree
 import 'package:kacchi_bari_admin_dashboard/features/salary/presentation/screen/edit_staff_screen.dart';
 import 'package:kacchi_bari_admin_dashboard/features/salary/presentation/screen/staff_screen.dart';
 import '../../features/dashboard/presentation/screen/dashboard_screen.dart';
-import '../../features/order/order_screen.dart';
+import '../../features/order/presentation/screen/order_screen.dart';
 import '../../features/salary/presentation/screen/add_staff_screen.dart';
 import '../../features/salary/presentation/screen/staff_details_screen.dart';
 import '../common/error_page.dart';

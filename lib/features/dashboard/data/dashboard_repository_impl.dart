@@ -14,9 +14,13 @@ class DashboardRepositoryImpl implements DashboardRepository {
   DashboardRepositoryImpl(this.apiService,);
 
   @override
-  Future<Either<Failure, OrderReport>> getSumOfNetPayable(String branchId, String date) async{
+  Future<Either<Failure, OrderReport>> getSumOfNetPayable(String branchId, String localStartTime, String localEndTime) async{
     try {
-      final response = await apiService.get( endPoint: "order/get-order-report?branchId=$branchId&date=$date");
+      final response = await apiService.get( endPoint: "order/get-order-report", params: {
+        "branchId": branchId,
+        "startTime": localStartTime,
+        "endTime": localEndTime
+      });
         return Right(OrderReport.fromJson(response.data));
 
     } catch (error) {

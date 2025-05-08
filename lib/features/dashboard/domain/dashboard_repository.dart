@@ -5,5 +5,5 @@ import '../../../core/network/failure.dart';
 import '../data/model/order_report_model.dart';
 
 abstract class DashboardRepository {
-  Future<Either<Failure, OrderReport>> getSumOfNetPayable(String branchId, String date);
+  Future<Either<Failure, OrderReport>> getSumOfNetPayable(String branchId, String localStartTime, String localEndTime);
 }

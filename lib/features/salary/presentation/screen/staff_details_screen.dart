@@ -994,9 +994,7 @@ class _StaffDetailsScreenState extends State<StaffDetailsScreen> {
                                   if (selectedDate != null) {
                                     _dateController.text =
                                         DateFormat.yMMMd().format(selectedDate);
-                                    paymentDate =
-                                        selectedDate.toUtc().toIso8601String();
-                                    log(paymentDate.toString());
+                                    paymentDate = selectedDate.toUtc().toIso8601String();
                                   }
                                 });
                               },
@@ -1061,14 +1059,11 @@ class _StaffDetailsScreenState extends State<StaffDetailsScreen> {
                                 return FloatingActionButton(
                                   onPressed: () {
                                     if (_formKey.currentState!.validate()) {
-                                      if (_selectedStaffSalaryPaymentModel !=
-                                          null) {
-                                        StaffSalaryPaymentDto
-                                            staffSalaryPaymentDto =
+                                      if (_selectedStaffSalaryPaymentModel != null) {
+                                        StaffSalaryPaymentDto staffSalaryPaymentDto =
                                             StaffSalaryPaymentDto(
                                           staffId: widget.staffId,
-                                          payAmount:
-                                              int.parse(_amountController.text),
+                                          payAmount: int.parse(_amountController.text),
                                           paymentDate: paymentDate!,
                                         );
                                         context

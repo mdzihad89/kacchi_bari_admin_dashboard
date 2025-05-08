@@ -11,11 +11,12 @@ abstract class DashboardEvent extends Equatable {
 
 class FetchDashboardEvent extends DashboardEvent {
   final String branchId;
-  final String  date;
+  final String  localStartTime;
+  final String  localEndTime;
 
-  const FetchDashboardEvent({required this.branchId, required this.date});
+  const FetchDashboardEvent({required this.branchId, required this.localStartTime, required this.localEndTime});
   @override
-  List<Object?> get props => [branchId, date];
+  List<Object?> get props => [branchId,  localStartTime, localEndTime];
 
 }
 

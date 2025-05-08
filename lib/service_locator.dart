@@ -17,6 +17,8 @@ import 'core/network/api_service.dart';
 import 'core/network/dio_factory.dart';
 import 'core/network/network_info.dart';
 import 'features/category/domain/repository/category_repository.dart';
+import 'features/order/data/order_repo_impl.dart';
+import 'features/order/domain/order_repository.dart';
 import 'features/prodduct/data/repositories/protuct_repository_impl.dart';
 import 'features/prodduct/domain/repository/product_repository.dart';
 import 'features/salary/data/repository/staff_repo_impl.dart';
@@ -43,7 +45,8 @@ Future<void> initAppModule() async {
   instance.registerFactory<ProductRepository>(() => ProductRepositoryImpl(instance()));
   instance.registerFactory<DashboardRepository>(() => DashboardRepositoryImpl(instance()));
   instance.registerFactory<StaffRepository>(() => StaffRepoImpl(instance()));
-
+  instance.registerFactory<OrderRepository>(() => OrderRepositoryImpl(instance()));
+  instance.registerFactory<OrderRepositoryImpl>(() => OrderRepositoryImpl(instance()));
 
 
 }

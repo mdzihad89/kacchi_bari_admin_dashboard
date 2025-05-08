@@ -12,6 +12,7 @@ import 'package:kacchi_bari_admin_dashboard/features/employee/presentation/bloc/
 import 'package:kacchi_bari_admin_dashboard/features/salary/domain/staff_repository.dart';
 import 'package:kacchi_bari_admin_dashboard/features/salary/presentation/bloc/staff_bloc.dart';
 import 'package:kacchi_bari_admin_dashboard/service_locator.dart';
+import 'package:paged_datatable/l10n/generated/l10n.dart';
 import 'core/app/app_router.dart';
 import 'package:flutter_web_plugins/url_strategy.dart';
 
@@ -65,6 +66,9 @@ class MyApp extends StatelessWidget {
         ),
       ],
       child: MaterialApp.router(
+        localizationsDelegates: const [
+          PagedDataTableLocalization.delegate
+        ],
         routerConfig: AppRouter().router,
         title: 'Kacchi Bari',
         debugShowCheckedModeBanner: false,
