@@ -22,7 +22,7 @@ jobs:
         run: flutter pub get
 
       - name: Build Flutter Web App without PWA
-        run: flutter build web --release --no-pwa
+        run: flutter build web --pwa-strategy=none
 
       - name: Set up SSH key with ssh-agent
         uses: webfactory/ssh-agent@v0.5.3
