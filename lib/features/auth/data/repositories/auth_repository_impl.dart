@@ -22,8 +22,12 @@ class AuthRepositoryImpl extends AuthRepository{
     try{
       final response = await _apiService.post(endPoint: "user/login", data: loginRequestDto.toJson());
       final data = userFromJson(jsonEncode(response.data));
-     _appPref.saveCredential (data.token!);
-     return Right(data);
+      if(data.role=="admin"){
+        _appPref.saveCredential (data.token!);
+        return Right(data);
+      }else{
+        return Left(Failure(ResponseCode.forbidden, "Only admin are allowed to sign in."));
+      }
     }catch(error){
 
       return Left(ErrorHandler.handle(error).failure);

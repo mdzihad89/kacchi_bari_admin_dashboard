@@ -21,8 +21,8 @@ jobs:
       - name: Install dependencies
         run: flutter pub get
 
-      - name: Build Flutter Web App
-        run: flutter build web --release
+      - name: Build Flutter Web App without PWA
+        run: flutter build web --release --no-pwa
 
       - name: Set up SSH key with ssh-agent
         uses: webfactory/ssh-agent@v0.5.3
