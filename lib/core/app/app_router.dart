@@ -95,12 +95,10 @@ class AppRouter {
                   GoRoute(
                    path: ":id",
                     builder: (context, state) {
-
                       final staffId = state.pathParameters['id']!;
                       return StaffDetailsScreen(staffId: staffId );
                     },
                   ),
-
                   GoRoute(
                     path: "edit/:id",
                     builder: (context, state) {

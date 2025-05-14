@@ -120,6 +120,8 @@ class _FilterBarState<K extends Comparable<K>, T>
   Future<void> _showFilterOverlay(
       TapDownDetails details, BuildContext context) {
     final mediaWidth = MediaQuery.of(context).size.width;
+    final mediaHeight = MediaQuery.of(context).size.height;
+
     final bool isBottomSheet = mediaWidth < theme.filterDialogBreakpoint;
 
     if (isBottomSheet) {
@@ -128,6 +130,7 @@ class _FilterBarState<K extends Comparable<K>, T>
             MaterialLocalizations.of(context).modalBarrierDismissLabel,
         context: context,
         builder: (context) => _FiltersDialog<K, T>(
+          availableHeight: mediaHeight,
           availableWidth: mediaWidth,
           rect: null,
           tableController: controller,
@@ -147,6 +150,7 @@ class _FilterBarState<K extends Comparable<K>, T>
       barrierColor: Colors.transparent,
       builder: (context) => _FiltersDialog<K, T>(
         availableWidth: mediaWidth,
+        availableHeight: mediaHeight,
         rect: rect,
         tableController: controller,
       ),
@@ -169,11 +173,13 @@ class _FiltersDialog<K extends Comparable<K>, T> extends StatelessWidget {
   final RelativeRect? rect;
   final PagedDataTableController<K, T> tableController;
   final double availableWidth;
+  final double? availableHeight;
 
   const _FiltersDialog(
       {required this.rect,
       required this.availableWidth,
-      required this.tableController});
+      required this.tableController,
+      required this.availableHeight});
 
   @override
   Widget build(BuildContext context) {
@@ -183,22 +189,28 @@ class _FiltersDialog<K extends Comparable<K>, T> extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8.0),
       child: Form(
         key: tableController._filtersFormKey,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Text(localizations.filterByTitle,
-                style: const TextStyle(fontWeight: FontWeight.bold)),
-            const SizedBox(height: 8),
-            ...tableController._filtersState.entries
-                .where((element) => element.value._filter.visible)
-                .map(
-                  (entry) => Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 6),
-                    child:
-                        entry.value._filter.buildPicker(context, entry.value),
-                  ),
-                )
-          ],
+        child: SizedBox(
+          height:  availableHeight!*0.7,
+          child: SingleChildScrollView(
+            scrollDirection:  Axis.vertical,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Text(localizations.filterByTitle,
+                    style: const TextStyle(fontWeight: FontWeight.bold)),
+                const SizedBox(height: 8),
+                ...tableController._filtersState.entries
+                    .where((element) => element.value._filter.visible)
+                    .map(
+                      (entry) => Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 6),
+                        child:
+                            entry.value._filter.buildPicker(context, entry.value),
+                      ),
+                    )
+              ],
+            ),
+          ),
         ),
       ),
     );
@@ -245,7 +257,9 @@ class _FiltersDialog<K extends Comparable<K>, T> extends StatelessWidget {
       ),
     );
 
+    log(rect.toString());
     if (rect == null) {
+      log("null rect");
       filtersList = Expanded(child: filtersList);
     }
 
@@ -264,6 +278,7 @@ class _FiltersDialog<K extends Comparable<K>, T> extends StatelessWidget {
     );
 
     if (rect != null) {
+      log("not null rect");
       return Stack(
         fit: StackFit.loose,
         children: [

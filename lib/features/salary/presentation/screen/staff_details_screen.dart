@@ -63,9 +63,7 @@ class _StaffDetailsScreenState extends State<StaffDetailsScreen> {
 
   @override
   void initState() {
-    context
-        .read<StaffSalaryPaymentBloc>()
-        .add(FetchSingleStaffEvent(staffId: widget.staffId));
+    context.read<StaffSalaryPaymentBloc>().add(FetchSingleStaffEvent(staffId: widget.staffId));
     super.initState();
   }
 
